@@ -14,7 +14,7 @@ A production-quality ticket booking system for movies and concerts with real-tim
 | Real-time | Socket.io |
 | Auth | JWT (access + refresh tokens), bcrypt |
 | QR Codes | `qrcode` npm package |
-| Email | Resend (free tier) |
+| Email | Nodemailer + Gmail SMTP |
 
 ## Setup Instructions
 
@@ -22,7 +22,7 @@ A production-quality ticket booking system for movies and concerts with real-tim
 - Node.js 18+
 - A [Neon](https://neon.tech) PostgreSQL database (free tier)
 - An [Upstash](https://upstash.com) Redis database (free tier)
-- A [Resend](https://resend.com) account (free tier)
+- A standard Gmail account (for sending emails via SMTP)
 
 ### 1. Clone & Install
 
@@ -47,7 +47,7 @@ cp .env.example .env
 - `DATABASE_URL` — Neon PostgreSQL connection string
 - `REDIS_URL` — Upstash Redis connection string
 - `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` — 32+ char secrets
-- `RESEND_API_KEY` — Your Resend API key
+- `SMTP_USER` & `SMTP_PASS` — Your Gmail address and Google App Password
 - `HMAC_SECRET` — 32+ char secret for QR/waitlist signing
 
 **Frontend `.env`**:
