@@ -236,16 +236,16 @@ export async function releaseSeats(
     },
   });
 
-  // Broadcast release via Socket.io
-  const io = getSocketServer();
-  if (io) {
-    for (const seatId of seatIds) {
-      io.to(`show:${showId}`).emit('seat:status-changed', {
-        showId,
-        seatId,
-        status: SeatStatus.AVAILABLE,
-        heldBy: null,
-      });
+  if (released.count > 0) {
+    const seats = await prisma.showSeat.findMany({
+      where: { id: { in: seatIds } },
+      select: { id: true, seat: { select: { category: true } } },
+    });
+
+    const { processWaitlistOnCancellation } = await import('../waitlist/waitlist.service');
+
+    for (const seat of seats) {
+      await processWaitlistOnCancellation(showId, seat.seat.category, seat.id);
     }
   }
 
@@ -278,22 +278,16 @@ export async function releaseExpiredHolds(
   });
 
   if (released.count > 0) {
-    const io = getSocketServer();
-    if (io) {
-      // Fetch the actual seatIds for the socket event
-      const seats = await prisma.showSeat.findMany({
-        where: { id: { in: showSeatIds } },
-        select: { id: true },
-      });
+    // Fetch the actual seats to get categories for waitlist processing
+    const seats = await prisma.showSeat.findMany({
+      where: { id: { in: showSeatIds } },
+      select: { id: true, seat: { select: { category: true } } },
+    });
 
-      for (const seat of seats) {
-        io.to(`show:${showId}`).emit('seat:status-changed', {
-          showId,
-          seatId: seat.id,
-          status: SeatStatus.AVAILABLE,
-          heldBy: null,
-        });
-      }
+    const { processWaitlistOnCancellation } = await import('../waitlist/waitlist.service');
+
+    for (const seat of seats) {
+      await processWaitlistOnCancellation(showId, seat.seat.category, seat.id);
     }
   }
 

@@ -33,7 +33,7 @@ export default function EventsPage() {
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-xl font-bold">{event.title}</h2>
               <span className="px-2 py-1 bg-gray-100 text-xs font-semibold rounded text-gray-600">
-                {event.type}
+                {event.type.replace('_', ' ')}
               </span>
             </div>
             <p className="text-gray-600 text-sm mb-6 flex-grow">{event.description}</p>

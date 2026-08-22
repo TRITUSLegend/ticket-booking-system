@@ -143,6 +143,10 @@ export default function CreateEventPage() {
             >
               <option value="CONCERT">Concert</option>
               <option value="MOVIE">Movie</option>
+              <option value="SPORTS">Sports</option>
+              <option value="THEATER">Theater</option>
+              <option value="COMEDY">Comedy</option>
+              <option value="LIVE_EVENT">Live Event</option>
             </select>
           </div>
           <Button type="submit" className="w-full" isLoading={isLoading}>Create Event</Button>

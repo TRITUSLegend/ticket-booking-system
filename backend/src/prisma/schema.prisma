@@ -16,6 +16,10 @@ enum Role {
 enum EventType {
   MOVIE
   CONCERT
+  SPORTS
+  THEATER
+  COMEDY
+  LIVE_EVENT
 }
 
 enum SeatCategory {
