@@ -1,19 +1,20 @@
 import { prisma } from '../../config';
 import { ApiError } from '../../middleware';
-import { CreateVenueInput } from './venues.validation';
+import { CreateVenueInput, UpdateVenueCategoriesInput } from './venues.validation';
 import { EventType } from '@prisma/client';
 
 export async function createVenue(data: CreateVenueInput, adminId: string) {
   // Validate category assignments cover all rows exactly once
-  const { rows } = data.layout;
-  const rowCoverage = new Array(rows).fill(false);
+  const { rows, shape } = data.layout;
+  const effectiveRows = shape === 'CIRCULAR' ? Math.ceil(rows / 2) : rows;
+  const rowCoverage = new Array(effectiveRows).fill(false);
 
   for (const assignment of data.categoryAssignments) {
     if (assignment.startRow > assignment.endRow) {
       throw ApiError.badRequest('startRow cannot be greater than endRow');
     }
-    if (assignment.startRow < 1 || assignment.endRow > rows) {
-      throw ApiError.badRequest(`Row assignments must be between 1 and ${rows}`);
+    if (assignment.startRow < 1 || assignment.endRow > effectiveRows) {
+      throw ApiError.badRequest(`Row assignments must be between 1 and ${effectiveRows} for ${shape} layout`);
     }
 
     for (let r = assignment.startRow; r <= assignment.endRow; r++) {
@@ -64,10 +65,17 @@ export async function createVenue(data: CreateVenueInput, adminId: string) {
 
     // Generate seats
     const seatsToCreate = [];
+    const midPoint = Math.ceil(data.layout.rows / 2);
+    
     for (let r = 1; r <= data.layout.rows; r++) {
-      // Find the category for this row
+      // Find the category for this row. For CIRCULAR, mirror the assignments based on distance from pitch
+      let distanceRow = r;
+      if (data.layout.shape === 'CIRCULAR') {
+        distanceRow = r <= midPoint ? r : r - midPoint;
+      }
+      
       const category = data.categoryAssignments.find(
-        (a) => r >= a.startRow && r <= a.endRow
+        (a) => distanceRow >= a.startRow && distanceRow <= a.endRow
       )!.category;
 
       const rowLetter = String.fromCharCode(64 + r); // 1->A, 2->B... (Assuming <= 26 rows for simplicity in this project)
@@ -128,4 +136,74 @@ export async function getVenueById(id: string) {
   }
 
   return venue;
+}
+
+export async function updateVenueCategories(venueId: string, data: UpdateVenueCategoriesInput) {
+  const venue = await prisma.venue.findUnique({
+    where: { id: venueId },
+    include: {
+      layouts: true,
+      shows: { select: { id: true } }
+    }
+  });
+
+  if (!venue) {
+    throw ApiError.notFound('Venue not found');
+  }
+
+  if (venue.shows.length > 0) {
+    throw ApiError.badRequest('Cannot edit seat categories because shows are already scheduled at this venue.');
+  }
+
+  const layout = venue.layouts[0];
+  if (!layout) {
+    throw ApiError.notFound('Venue layout not found');
+  }
+
+  const rows = layout.rows;
+  const shape = layout.shape;
+  const effectiveRows = shape === 'CIRCULAR' ? Math.ceil(rows / 2) : rows;
+  const rowCoverage = new Array(effectiveRows).fill(false);
+
+  for (const assignment of data.categoryAssignments) {
+    if (assignment.startRow > assignment.endRow) {
+      throw ApiError.badRequest('startRow cannot be greater than endRow');
+    }
+    if (assignment.startRow < 1 || assignment.endRow > effectiveRows) {
+      throw ApiError.badRequest(`Row assignments must be between 1 and ${effectiveRows} for ${shape} layout`);
+    }
+
+    for (let r = assignment.startRow; r <= assignment.endRow; r++) {
+      if (rowCoverage[r - 1]) {
+        throw ApiError.badRequest(`Overlapping category assignment at row ${r}`);
+      }
+      rowCoverage[r - 1] = true;
+    }
+  }
+
+  if (rowCoverage.includes(false)) {
+    throw ApiError.badRequest('Category assignments must cover all rows without gaps');
+  }
+
+  const midPoint = Math.ceil(rows / 2);
+
+  await prisma.$transaction(async (tx) => {
+    for (let r = 1; r <= rows; r++) {
+      let distanceRow = r;
+      if (shape === 'CIRCULAR') {
+        distanceRow = r <= midPoint ? r : r - midPoint;
+      }
+      
+      const category = data.categoryAssignments.find(
+        (a) => distanceRow >= a.startRow && distanceRow <= a.endRow
+      )!.category;
+
+      await tx.seat.updateMany({
+        where: { layoutId: layout.id, row: r },
+        data: { category }
+      });
+    }
+  });
+
+  return { success: true };
 }

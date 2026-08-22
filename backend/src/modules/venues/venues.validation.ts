@@ -18,3 +18,13 @@ export const createVenueSchema = z.object({
 });
 
 export type CreateVenueInput = z.infer<typeof createVenueSchema>;
+
+export const updateVenueCategoriesSchema = z.object({
+  categoryAssignments: z.array(z.object({
+    startRow: z.number().int().min(1),
+    endRow: z.number().int().min(1),
+    category: z.string().min(1),
+  })).min(1),
+});
+
+export type UpdateVenueCategoriesInput = z.infer<typeof updateVenueCategoriesSchema>;

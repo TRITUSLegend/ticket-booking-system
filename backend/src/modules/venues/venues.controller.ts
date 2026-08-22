@@ -29,3 +29,12 @@ export async function getById(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+
+export async function updateCategories(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = await venuesService.updateVenueCategories(req.params.id, req.body);
+    res.status(200).json({ status: 'success', data: result });
+  } catch (error) {
+    next(error);
+  }
+}

@@ -99,8 +99,13 @@ export default function CreateVenuePage() {
   const colCount = Number(columns) || 0;
 
   const getCategoryForRow = (row: number): string => {
+    let distanceRow = row;
+    if (shape === 'CIRCULAR') {
+      const midPoint = Math.ceil(rowCount / 2);
+      distanceRow = row <= midPoint ? row : row - midPoint;
+    }
     for (const a of assignments) {
-      if (row >= a.startRow && row <= a.endRow) return a.category || 'UNASSIGNED';
+      if (distanceRow >= a.startRow && distanceRow <= a.endRow) return a.category || 'UNASSIGNED';
     }
     return 'UNASSIGNED';
   };
@@ -188,27 +193,36 @@ export default function CreateVenuePage() {
             </div>
 
             <div className="border-t border-gray-100 pt-4">
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex justify-between items-center mb-1">
                 <h3 className="font-semibold text-sm">Category Assignments</h3>
                 <button type="button" className="text-primary text-sm hover:underline" onClick={addAssignment}>+ Add</button>
               </div>
+              
+              {shape === 'CIRCULAR' && (
+                <p className="text-xs text-blue-600 mb-3 bg-blue-50 p-2 rounded">
+                  For circular layouts, assignments are mirrored symmetrically from the pitch outwards (1 to {Math.ceil(Number(rows) / 2) || 1}).
+                </p>
+              )}
 
-              {assignments.map((a, i) => (
-                <div key={i} className="flex items-center gap-2 mb-2">
-                  <Input type="number" min="1" max={rows} value={String(a.startRow)} onChange={(e) => updateAssignment(i, 'startRow', e.target.value)} className="w-20" />
-                  <span className="text-gray-400">to</span>
-                  <Input type="number" min="1" max={rows} value={String(a.endRow)} onChange={(e) => updateAssignment(i, 'endRow', e.target.value)} className="w-20" />
-                  <Input
-                    label=""
-                    placeholder="Category (e.g. VIP, Standard)"
-                    value={a.category}
-                    onChange={(e) => updateAssignment(i, 'category', e.target.value)}
-                  />
-                  {assignments.length > 1 && (
-                    <button type="button" className="text-red-400 hover:text-red-600 text-lg" onClick={() => removeAssignment(i)}>×</button>
-                  )}
-                </div>
-              ))}
+              {assignments.map((a, i) => {
+                const maxRow = shape === 'CIRCULAR' ? Math.ceil(Number(rows) / 2) : Number(rows);
+                return (
+                  <div key={i} className="flex items-center gap-2 mb-2">
+                    <Input type="number" min="1" max={maxRow} value={String(a.startRow)} onChange={(e) => updateAssignment(i, 'startRow', e.target.value)} className="w-20" />
+                    <span className="text-gray-400">to</span>
+                    <Input type="number" min="1" max={maxRow} value={String(a.endRow)} onChange={(e) => updateAssignment(i, 'endRow', e.target.value)} className="w-20" />
+                    <Input
+                      label=""
+                      placeholder="Category (e.g. VIP, Standard)"
+                      value={a.category}
+                      onChange={(e) => updateAssignment(i, 'category', e.target.value)}
+                    />
+                    {assignments.length > 1 && (
+                      <button type="button" className="text-red-400 hover:text-red-600 text-lg" onClick={() => removeAssignment(i)}>×</button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <Button type="submit" className="w-full" isLoading={isLoading}>Create Venue</Button>

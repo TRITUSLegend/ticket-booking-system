@@ -38,9 +38,18 @@ export default function VenuesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {venues.map((venue) => (
-            <div key={venue.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-bold mb-2">{venue.name}</h2>
-              <p className="text-gray-600 text-sm mb-4">{venue.address}</p>
+            <div key={venue.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-start mb-2">
+                  <h2 className="text-xl font-bold">{venue.name}</h2>
+                  <button 
+                    onClick={() => window.location.href = `/venues/${venue.id}/edit`}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Edit Categories
+                  </button>
+                </div>
+                <p className="text-gray-600 text-sm mb-4">{venue.address}</p>
               {venue.layouts?.[0] && (
                 <div className="text-gray-500 text-sm space-y-1">
                   <p>
@@ -54,6 +63,7 @@ export default function VenuesPage() {
                   )}
                 </div>
               )}
+              </div>
             </div>
           ))}
         </div>
