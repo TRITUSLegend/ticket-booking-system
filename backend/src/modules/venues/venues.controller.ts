@@ -11,14 +11,15 @@ export async function create(req: AuthenticatedRequest, res: Response, next: Nex
   }
 }
 
-export async function list(_req: Request, res: Response, next: NextFunction) {
+export async function list(req: Request, res: Response, next: NextFunction) {
   try {
-    const venues = await venuesService.getVenues();
-    res.status(200).json({ status: 'success', data: venues });
+    const eventType = req.query.eventType as string | undefined;
+    const venues = await venuesService.getVenues(eventType);
+    res.json({ status: 'success', data: venues });
   } catch (error) {
     next(error);
   }
-}
+};
 
 export async function getById(req: Request, res: Response, next: NextFunction) {
   try {

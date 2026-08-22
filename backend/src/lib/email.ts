@@ -130,3 +130,35 @@ export async function sendWaitlistOfferEmail(params: WaitlistOfferEmailParams): 
     return false;
   }
 }
+
+interface CancellationEmailParams {
+  to: string;
+  customerName: string;
+  eventTitle: string;
+}
+
+/**
+ * Send an event cancellation email.
+ */
+export async function sendCancellationEmail(params: CancellationEmailParams): Promise<boolean> {
+  try {
+    await transporter.sendMail({
+      from: `"TicketPro Updates" <${env.SMTP_USER}>`,
+      to: params.to,
+      subject: `Event Cancelled — ${params.eventTitle}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #e94560;">Event Cancelled</h1>
+          <p>Hi ${params.customerName},</p>
+          <p>We are writing to inform you that <strong>${params.eventTitle}</strong> has been cancelled by the organiser.</p>
+          <p>Any bookings you had for this event are now void. If you made any payments, they will be automatically refunded to your original payment method within 5-7 business days.</p>
+          <p>We apologize for the inconvenience.</p>
+        </div>
+      `,
+    });
+    return true;
+  } catch (error) {
+    console.error('Failed to send cancellation email:', error);
+    return false;
+  }
+}

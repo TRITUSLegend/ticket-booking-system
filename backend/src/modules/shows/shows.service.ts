@@ -37,6 +37,10 @@ export async function createShow(data: CreateShowInput, organiserId: string) {
     throw ApiError.badRequest('Venue must have a layout before scheduling shows');
   }
 
+  if (venue.supportedEventTypes.length > 0 && !venue.supportedEventTypes.includes(event.type)) {
+    throw ApiError.badRequest(`This venue does not support ${event.type} events.`);
+  }
+
   // Verify pricing covers all categories present in the layout
   const layoutCategories = new Set(layout.seats.map(s => s.category));
   const pricingCategories = new Set(data.pricing.map(p => p.category));
@@ -91,7 +95,7 @@ export async function getShowById(id: string) {
       event: { select: { title: true, type: true } },
       venue: { select: { name: true, address: true } },
       pricing: true,
-      layout: { select: { rows: true, columns: true } },
+      layout: { select: { rows: true, columns: true, shape: true } },
     },
   });
 

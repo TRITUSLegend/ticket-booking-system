@@ -19,10 +19,11 @@ export type SeatData = {
 interface SeatGridProps {
   showId: string;
   initialSeats: SeatData[];
+  shape?: 'RECTANGULAR' | 'CIRCULAR' | 'STAGE';
   onSelectionChange: (selectedSeatIds: string[]) => void;
 }
 
-export function SeatGrid({ showId, initialSeats, onSelectionChange }: SeatGridProps) {
+export function SeatGrid({ showId, initialSeats, shape = 'RECTANGULAR', onSelectionChange }: SeatGridProps) {
   const [seats, setSeats] = useState<Record<string, SeatData>>({});
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { user } = useAuth();
@@ -104,40 +105,72 @@ export function SeatGrid({ showId, initialSeats, onSelectionChange }: SeatGridPr
     return Object.entries(grouped).sort(([a], [b]) => Number(a) - Number(b));
   }, [seats]);
 
-  return (
-    <div className="overflow-x-auto p-4 bg-white rounded-lg shadow border border-gray-200">
-      <div className="min-w-max mx-auto space-y-4">
-        {/* Screen Indicator */}
-        <div className="w-3/4 mx-auto h-8 bg-gray-200 rounded-b-[50%] border-t-4 border-gray-400 text-center text-xs font-semibold text-gray-500 pt-1 mb-8 shadow-inner">
-          SCREEN
-        </div>
+  const renderRows = (rowsToRender: typeof rows, isTopHalf: boolean = false) => {
+    const displayRows = isTopHalf ? [...rowsToRender].reverse() : rowsToRender;
 
-        {rows.map(([rowNum, rowSeats]) => (
-          <div key={rowNum} className="flex items-center space-x-4">
-            <div className="w-6 text-right text-sm font-bold text-gray-400">
-              {String.fromCharCode(64 + Number(rowNum))}
+    return displayRows.map(([rowNum, rowSeats]) => (
+      <div key={rowNum} className="flex items-center justify-center space-x-4 mb-2">
+        <div className="w-6 text-right text-sm font-bold text-gray-400">
+          {String.fromCharCode(64 + Number(rowNum))}
+        </div>
+        <div className={`flex space-x-2 ${isTopHalf ? 'rotate-180' : ''}`}>
+          {rowSeats.map((seat) => {
+            const isMine =
+              (seat.status === 'HELD' && seat.heldById === user?.id) ||
+              selectedIds.has(seat.id);
+            return (
+              <div key={seat.id} className={isTopHalf ? 'rotate-180' : ''}>
+                <Seat
+                  id={seat.id}
+                  label={seat.label}
+                  status={seat.status}
+                  category={seat.category}
+                  isMine={isMine}
+                  onSelect={handleSelect}
+                />
+              </div>
+            );
+          })}
+        </div>
+        <div className="w-6 text-left text-sm font-bold text-gray-400">
+          {String.fromCharCode(64 + Number(rowNum))}
+        </div>
+      </div>
+    ));
+  };
+
+  return (
+    <div className="overflow-x-auto p-4 w-full">
+      <div className="min-w-max mx-auto">
+        
+        {shape === 'RECTANGULAR' && (
+          <>
+            <div className="w-3/4 mx-auto h-8 bg-gray-200 rounded-b-[50%] border-t-4 border-gray-400 text-center text-xs font-semibold text-gray-500 pt-1 mb-12 shadow-inner">
+              SCREEN
             </div>
-            <div className="flex space-x-2">
-              {rowSeats.map((seat) => {
-                const isMine =
-                  (seat.status === 'HELD' && seat.heldById === user?.id) ||
-                  selectedIds.has(seat.id);
-                
-                return (
-                  <Seat
-                    key={seat.id}
-                    id={seat.id}
-                    label={seat.label}
-                    status={seat.status}
-                    category={seat.category}
-                    isMine={isMine}
-                    onSelect={handleSelect}
-                  />
-                );
-              })}
+            {renderRows(rows)}
+          </>
+        )}
+
+        {shape === 'STAGE' && (
+          <>
+            <div className="w-3/4 mx-auto h-16 bg-gray-900 rounded-b-full border-t-8 border-black text-center flex items-center justify-center text-white font-bold tracking-widest mb-16 shadow-2xl shadow-gray-900/50">
+              STAGE
             </div>
-          </div>
-        ))}
+            {renderRows(rows)}
+          </>
+        )}
+
+        {shape === 'CIRCULAR' && (
+          <>
+            {renderRows(rows.slice(0, Math.ceil(rows.length / 2)), true)}
+            <div className="w-full max-w-2xl mx-auto h-40 bg-green-50 border-4 border-green-200 rounded-[100px] my-10 flex items-center justify-center text-green-700 font-bold uppercase tracking-[0.3em] shadow-inner">
+              Pitch / Court
+            </div>
+            {renderRows(rows.slice(Math.ceil(rows.length / 2)), false)}
+          </>
+        )}
+
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { prisma, env } from '../../config';
 import { ApiError } from '../../middleware';
-import { SeatStatus, WaitlistStatus, SeatCategory } from '@prisma/client';
+import { SeatStatus, WaitlistStatus } from '@prisma/client';
 import { signWaitlistOffer, verifyWaitlistOffer } from '../../lib/crypto';
 import { sendWaitlistOfferEmail } from '../../lib/email';
 import { scheduleOfferExpiry } from '../../jobs/queues';
@@ -8,7 +8,7 @@ import { getSocketServer } from '../../sockets';
 
 export async function joinWaitlist(showId: string, category: string, userId: string) {
   const existing = await prisma.waitlist.findFirst({
-    where: { showId, category: category as SeatCategory, customerId: userId, status: WaitlistStatus.WAITING },
+    where: { showId, category, customerId: userId, status: WaitlistStatus.WAITING },
   });
 
   if (existing) {
@@ -18,7 +18,7 @@ export async function joinWaitlist(showId: string, category: string, userId: str
   return prisma.waitlist.create({
     data: {
       showId,
-      category: category as SeatCategory,
+      category,
       customerId: userId,
       status: WaitlistStatus.WAITING,
     },

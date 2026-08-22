@@ -22,11 +22,6 @@ enum EventType {
   LIVE_EVENT
 }
 
-enum SeatCategory {
-  PREMIUM
-  STANDARD
-}
-
 enum SeatStatus {
   AVAILABLE
   HELD
@@ -65,12 +60,19 @@ model User {
   @@map("users")
 }
 
+enum LayoutShape {
+  RECTANGULAR
+  CIRCULAR
+  STAGE
+}
+
 model Venue {
-  id        String   @id @default(uuid())
-  name      String
-  address   String
-  createdBy String
-  createdAt DateTime @default(now())
+  id                  String      @id @default(uuid())
+  name                String
+  address             String
+  createdBy           String
+  supportedEventTypes EventType[]
+  createdAt           DateTime    @default(now())
 
   creator User         @relation(fields: [createdBy], references: [id])
   layouts SeatLayout[]
@@ -80,11 +82,12 @@ model Venue {
 }
 
 model SeatLayout {
-  id        String   @id @default(uuid())
+  id        String      @id @default(uuid())
   venueId   String
   rows      Int
   columns   Int
-  createdAt DateTime @default(now())
+  shape     LayoutShape @default(RECTANGULAR)
+  createdAt DateTime    @default(now())
 
   venue Venue  @relation(fields: [venueId], references: [id])
   seats Seat[]
@@ -98,7 +101,7 @@ model Seat {
   layoutId String
   row      Int
   column   Int
-  category SeatCategory
+  category String
   label    String
 
   layout    SeatLayout @relation(fields: [layoutId], references: [id])
@@ -145,7 +148,7 @@ model Show {
 model ShowSeatPricing {
   id       String       @id @default(uuid())
   showId   String
-  category SeatCategory
+  category String
   price    Decimal
 
   show Show @relation(fields: [showId], references: [id])
@@ -169,7 +172,7 @@ model ShowSeat {
   booking      Booking?      @relation(fields: [bookingId], references: [id])
   bookingSeats BookingSeat[]
 
-  // Standard unique constraint — the partial index is added via raw SQL migration
+  // Standard unique constraint ?" the partial index is added via raw SQL migration
   @@unique([showId, seatId])
   @@map("show_seats")
 }
@@ -206,7 +209,7 @@ model BookingSeat {
 model Waitlist {
   id             String         @id @default(uuid())
   showId         String
-  category       SeatCategory
+  category       String
   customerId     String
   status         WaitlistStatus @default(WAITING)
   offerExpiresAt DateTime?

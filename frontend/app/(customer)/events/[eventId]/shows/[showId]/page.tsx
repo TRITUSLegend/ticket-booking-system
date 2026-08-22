@@ -117,13 +117,11 @@ export default function ShowSeatMapPage() {
         
         {/* Left Column: Seat Map */}
         <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-x-auto">
-          <h2 className="text-xl font-bold mb-6 text-center">Screen / Stage</h2>
-          <div className="w-full h-2 bg-gray-300 rounded-full mb-12 mx-auto max-w-2xl opacity-50" />
-          
           <div className="flex justify-center min-w-max">
             <SeatGrid 
               showId={showId}
               initialSeats={initialSeats}
+              shape={showData.layout.shape}
               onSelectionChange={setSelectedSeatIds}
             />
           </div>

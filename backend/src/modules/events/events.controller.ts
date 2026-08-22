@@ -38,3 +38,12 @@ export async function getById(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+
+export async function remove(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    await eventsService.deleteEvent(req.params.id as string, req.user.userId);
+    res.status(200).json({ status: 'success', message: 'Event deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+}

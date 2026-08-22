@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { SeatCategory } from '@prisma/client';
 
 export const createShowSchema = z.object({
   eventId: z.string().uuid(),
@@ -7,7 +6,7 @@ export const createShowSchema = z.object({
   date: z.string().datetime(), // ISO datetime string
   time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Must be in HH:mm format'),
   pricing: z.array(z.object({
-    category: z.nativeEnum(SeatCategory),
+    category: z.string().min(1),
     price: z.number().positive(),
   })).min(1),
 });

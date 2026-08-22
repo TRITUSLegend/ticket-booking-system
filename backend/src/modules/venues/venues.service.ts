@@ -1,6 +1,7 @@
 import { prisma } from '../../config';
 import { ApiError } from '../../middleware';
 import { CreateVenueInput } from './venues.validation';
+import { EventType } from '@prisma/client';
 
 export async function createVenue(data: CreateVenueInput, adminId: string) {
   // Validate category assignments cover all rows exactly once
@@ -27,6 +28,20 @@ export async function createVenue(data: CreateVenueInput, adminId: string) {
     throw ApiError.badRequest('Category assignments must cover all rows without gaps');
   }
 
+  const shapeMapping: Record<string, EventType[]> = {
+    'RECTANGULAR': ['MOVIE'],
+    'STAGE': ['THEATER', 'LIVE_EVENT', 'COMEDY'],
+    'CIRCULAR': ['SPORTS', 'CONCERT']
+  };
+  
+  const allowedTypes: EventType[] = shapeMapping[data.layout.shape] || [];
+  
+  const finalEventTypes = data.supportedEventTypes.filter(t => allowedTypes.includes(t));
+  
+  if (finalEventTypes.length === 0) {
+    throw ApiError.badRequest(`You must select at least one valid event type for the ${data.layout.shape} shape.`);
+  }
+
   // Create everything in a transaction
   return prisma.$transaction(async (tx) => {
     const venue = await tx.venue.create({
@@ -34,6 +49,7 @@ export async function createVenue(data: CreateVenueInput, adminId: string) {
         name: data.name,
         address: data.address,
         createdBy: adminId,
+        supportedEventTypes: finalEventTypes,
       },
     });
 
@@ -42,6 +58,7 @@ export async function createVenue(data: CreateVenueInput, adminId: string) {
         venueId: venue.id,
         rows: data.layout.rows,
         columns: data.layout.columns,
+        shape: data.layout.shape,
       },
     });
 
@@ -78,8 +95,15 @@ export async function createVenue(data: CreateVenueInput, adminId: string) {
   });
 }
 
-export async function getVenues() {
+export async function getVenues(eventType?: string) {
+  const whereClause = eventType ? {
+    supportedEventTypes: {
+      has: eventType as any,
+    },
+  } : {};
+
   return prisma.venue.findMany({
+    where: whereClause,
     include: {
       layouts: true,
     },

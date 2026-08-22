@@ -22,16 +22,33 @@ export default function CreateEventPage() {
   const [venueId, setVenueId] = useState('');
   const [showDate, setShowDate] = useState('');
   const [showTime, setShowTime] = useState('');
-  const [premiumPrice, setPremiumPrice] = useState('');
-  const [standardPrice, setStandardPrice] = useState('');
+  const [venueCategories, setVenueCategories] = useState<string[]>([]);
+  const [pricingInputs, setPricingInputs] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (eventCreated) {
-      fetchApi<{ data: { id: string; name: string }[] }>('/api/venues')
+      fetchApi<{ data: { id: string; name: string }[] }>(`/api/venues?eventType=${type}`)
         .then((res) => setVenues(res.data))
         .catch(console.error);
     }
-  }, [eventCreated]);
+  }, [eventCreated, type]);
+
+  useEffect(() => {
+    if (venueId) {
+      fetchApi<{ data: any }>(`/api/venues/${venueId}`)
+        .then((res) => {
+          const layout = res.data.layouts?.[0];
+          if (layout && layout.seats) {
+            const uniqueCats = Array.from(new Set(layout.seats.map((s: any) => s.category))) as string[];
+            setVenueCategories(uniqueCats);
+            const defaultPricing: Record<string, string> = {};
+            uniqueCats.forEach(cat => defaultPricing[cat] = '');
+            setPricingInputs(defaultPricing);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [venueId]);
 
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,9 +73,10 @@ export default function CreateEventPage() {
     setIsLoading(true);
     setError('');
     try {
-      const pricing = [];
-      if (premiumPrice) pricing.push({ category: 'PREMIUM', price: Number(premiumPrice) });
-      if (standardPrice) pricing.push({ category: 'STANDARD', price: Number(standardPrice) });
+      const pricing = venueCategories.map(cat => ({
+        category: cat,
+        price: Number(pricingInputs[cat]) || 0
+      }));
 
       await fetchApi<any>('/api/shows', {
         method: 'POST',
@@ -97,7 +115,9 @@ export default function CreateEventPage() {
                 onChange={(e) => setVenueId(e.target.value)}
                 required
               >
-                <option value="">Select a venue...</option>
+                <option value="" disabled>
+                  {venues.length === 0 ? 'No compatible venues available' : 'Select a venue...'}
+                </option>
                 {venues.map((v) => (
                   <option key={v.id} value={v.id}>{v.name}</option>
                 ))}
@@ -105,8 +125,25 @@ export default function CreateEventPage() {
             </div>
             <Input label="Show Date" type="date" value={showDate} onChange={(e) => setShowDate(e.target.value)} required />
             <Input label="Show Time" type="time" value={showTime} onChange={(e) => setShowTime(e.target.value)} required />
-            <Input label="Premium Price (₹)" type="number" value={premiumPrice} onChange={(e) => setPremiumPrice(e.target.value)} required />
-            <Input label="Standard Price (₹)" type="number" value={standardPrice} onChange={(e) => setStandardPrice(e.target.value)} required />
+            
+            {venueCategories.length > 0 && (
+              <div className="pt-2 border-t border-gray-100">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Set Pricing per Category</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  {venueCategories.map(cat => (
+                    <Input
+                      key={cat}
+                      label={`${cat} Price (₹)`}
+                      type="number"
+                      value={pricingInputs[cat] || ''}
+                      onChange={(e) => setPricingInputs({ ...pricingInputs, [cat]: e.target.value })}
+                      required
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             <Button type="submit" className="w-full" isLoading={isLoading}>Schedule Show</Button>
           </form>
         </div>

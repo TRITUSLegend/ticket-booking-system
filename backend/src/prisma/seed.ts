@@ -1,4 +1,4 @@
-import { PrismaClient, Role, EventType, SeatCategory, SeatStatus } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -14,7 +14,7 @@ async function main() {
     create: { email: 'admin@test.com', name: 'System Admin', role: Role.ADMIN, passwordHash },
   });
 
-  const organiser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'organiser@test.com' },
     update: {},
     create: { email: 'organiser@test.com', name: 'Event Organiser', role: Role.ORGANISER, passwordHash },
@@ -38,7 +38,7 @@ async function main() {
   // 3. Seats
   const seatsData = [];
   for (let r = 1; r <= 5; r++) {
-    const category = r <= 2 ? SeatCategory.PREMIUM : SeatCategory.STANDARD;
+    const category = r <= 2 ? 'PREMIUM' : 'STANDARD';
     const rowLetter = String.fromCharCode(64 + r);
     for (let c = 1; c <= 10; c++) {
       seatsData.push({
@@ -51,7 +51,6 @@ async function main() {
     }
   }
   await prisma.seat.createMany({ data: seatsData });
-  const seats = await prisma.seat.findMany({ where: { layoutId: layout.id } });
 
   // 4. Seeding of dummy events has been removed per user request.
 

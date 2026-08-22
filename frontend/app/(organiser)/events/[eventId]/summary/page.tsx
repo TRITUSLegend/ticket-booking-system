@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { fetchApi } from '../../../../../lib/api-client';
 import { useAuth } from '../../../../../lib/auth-context';
+import { Modal } from '../../../../../components/ui/Modal';
+import { Input } from '../../../../../components/ui/Input';
+import { Button } from '../../../../../components/ui/Button';
 
 /**
  * Organiser Event Summary Page
@@ -16,6 +19,17 @@ export default function EventSummaryPage() {
   const [event, setEvent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Add show state
+  const [isAddShowModalOpen, setIsAddShowModalOpen] = useState(false);
+  const [venues, setVenues] = useState<{ id: string; name: string }[]>([]);
+  const [venueId, setVenueId] = useState('');
+  const [venueCategories, setVenueCategories] = useState<string[]>([]);
+  const [pricingInputs, setPricingInputs] = useState<Record<string, string>>({});
+  const [showDate, setShowDate] = useState('');
+  const [showTime, setShowTime] = useState('');
+  const [isSubmittingShow, setIsSubmittingShow] = useState(false);
+  const [showError, setShowError] = useState('');
 
   useEffect(() => {
     if (user?.role !== 'ORGANISER') return;
@@ -37,14 +51,100 @@ export default function EventSummaryPage() {
   if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
   if (!event) return <div className="p-8 text-center text-red-600">Event not found.</div>;
 
+  const router = useRouter();
+
+  const handleDeleteEvent = async () => {
+    if (!confirm('Are you sure you want to delete this event? This will cancel all bookings and refund customers. This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await fetchApi(`/api/events/${eventId}`, { method: 'DELETE' });
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete event');
+    }
+  };
+
+  useEffect(() => {
+    if (isAddShowModalOpen && event?.type) {
+      fetchApi<{ data: { id: string; name: string }[] }>(`/api/venues?eventType=${event.type}`)
+        .then((res) => setVenues(res.data))
+        .catch(console.error);
+    }
+  }, [isAddShowModalOpen, event?.type]);
+
+  useEffect(() => {
+    if (venueId) {
+      fetchApi<{ data: any }>(`/api/venues/${venueId}`)
+        .then((res) => {
+          const layout = res.data.layouts?.[0];
+          if (layout && layout.seats) {
+            const uniqueCats = Array.from(new Set(layout.seats.map((s: any) => s.category))) as string[];
+            setVenueCategories(uniqueCats);
+            const defaultPricing: Record<string, string> = {};
+            uniqueCats.forEach(cat => defaultPricing[cat] = '');
+            setPricingInputs(defaultPricing);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [venueId]);
+
+  const handleAddShow = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingShow(true);
+    setShowError('');
+    try {
+      const pricing = venueCategories.map(cat => ({
+        category: cat,
+        price: Number(pricingInputs[cat]) || 0
+      }));
+
+      await fetchApi('/api/shows', {
+        method: 'POST',
+        body: JSON.stringify({
+          eventId,
+          venueId,
+          date: showDate,
+          time: showTime,
+          pricing,
+        }),
+      });
+      setIsAddShowModalOpen(false);
+      // Reload event data to show the new show
+      window.location.reload();
+    } catch (err: any) {
+      setShowError(err.message || 'Failed to schedule show');
+    } finally {
+      setIsSubmittingShow(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">{event.title}</h1>
-        <p className="text-gray-600 mt-1">{event.description}</p>
-        <span className="inline-block mt-2 px-3 py-1 bg-gray-100 text-sm font-semibold rounded-full text-gray-600">
-          {event.type}
-        </span>
+      <div className="flex flex-col md:flex-row md:items-start justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">{event.title}</h1>
+          <p className="text-gray-600 mt-1">{event.description}</p>
+          <span className="inline-block mt-2 px-3 py-1 bg-gray-100 text-sm font-semibold rounded-full text-gray-600">
+            {event.type}
+          </span>
+        </div>
+        <div className="flex gap-4 mt-4 md:mt-0">
+          <button 
+            onClick={() => setIsAddShowModalOpen(true)}
+            className="px-4 py-2 bg-primary text-white rounded font-medium hover:bg-blue-700 transition"
+          >
+            Schedule Additional Show
+          </button>
+          <button 
+            onClick={handleDeleteEvent}
+            className="px-4 py-2 bg-red-600 text-white rounded font-medium hover:bg-red-700 transition"
+          >
+            Delete Event
+          </button>
+        </div>
       </div>
 
       <h2 className="text-xl font-bold mb-4">Shows</h2>
@@ -126,6 +226,54 @@ export default function EventSummaryPage() {
           })}
         </div>
       )}
+
+      <Modal
+        isOpen={isAddShowModalOpen}
+        onClose={() => setIsAddShowModalOpen(false)}
+        title="Schedule Additional Show"
+      >
+        <form onSubmit={handleAddShow} className="space-y-4">
+          {showError && <div className="text-red-500 text-sm mb-4">{showError}</div>}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Venue</label>
+            <select
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
+              value={venueId}
+              onChange={(e) => setVenueId(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                {venues.length === 0 ? 'No compatible venues available' : 'Select a venue...'}
+              </option>
+              {venues.map((v) => (
+                <option key={v.id} value={v.id}>{v.name}</option>
+              ))}
+            </select>
+          </div>
+          <Input label="Show Date" type="date" value={showDate} onChange={(e) => setShowDate(e.target.value)} required />
+          <Input label="Show Time" type="time" value={showTime} onChange={(e) => setShowTime(e.target.value)} required />
+          
+          {venueCategories.length > 0 && (
+            <div className="pt-2 border-t border-gray-100">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Set Pricing per Category</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {venueCategories.map(cat => (
+                  <Input
+                    key={cat}
+                    label={`${cat} Price (₹)`}
+                    type="number"
+                    value={pricingInputs[cat] || ''}
+                    onChange={(e) => setPricingInputs({ ...pricingInputs, [cat]: e.target.value })}
+                    required
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Button type="submit" className="w-full" isLoading={isSubmittingShow}>Schedule Show</Button>
+        </form>
+      </Modal>
     </div>
   );
 }
