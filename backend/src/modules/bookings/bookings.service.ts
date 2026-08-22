@@ -12,7 +12,7 @@ export async function checkout(data: CheckoutInput, userId: string) {
     const showSeats = await tx.$queryRaw<ShowSeat[]>`
       SELECT * FROM show_seats
       WHERE "showId" = ${data.showId}
-        AND "seatId" IN (${Prisma.join(data.seatIds)})
+        AND id IN (${Prisma.join(data.seatIds)})
       FOR UPDATE OF show_seats
     `;
 

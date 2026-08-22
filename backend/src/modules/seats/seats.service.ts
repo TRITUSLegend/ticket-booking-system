@@ -120,7 +120,7 @@ export async function holdSeats(
       FROM show_seats ss
       JOIN seats s ON ss."seatId" = s.id
       WHERE ss."showId" = ${showId}
-        AND ss."seatId" IN (${Prisma.join(seatIds)})
+        AND ss.id IN (${Prisma.join(seatIds)})
       FOR UPDATE OF ss
     `;
 
@@ -225,7 +225,7 @@ export async function releaseSeats(
   const released = await prisma.showSeat.updateMany({
     where: {
       showId,
-      seatId: { in: seatIds },
+      id: { in: seatIds },
       status: SeatStatus.HELD,
       heldById: userId,
     },
@@ -283,13 +283,13 @@ export async function releaseExpiredHolds(
       // Fetch the actual seatIds for the socket event
       const seats = await prisma.showSeat.findMany({
         where: { id: { in: showSeatIds } },
-        select: { seatId: true },
+        select: { id: true },
       });
 
       for (const seat of seats) {
         io.to(`show:${showId}`).emit('seat:status-changed', {
           showId,
-          seatId: seat.seatId,
+          seatId: seat.id,
           status: SeatStatus.AVAILABLE,
           heldBy: null,
         });

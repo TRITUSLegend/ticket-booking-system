@@ -3,11 +3,16 @@ import { env } from '../config/env';
 import { generateQrCode } from './qr';
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: '142.251.10.108', // smtp.gmail.com IPv4 bypass for environments with broken IPv6/WARP
+  port: 465,
+  secure: true,
   auth: {
     user: env.SMTP_USER,
     pass: env.SMTP_PASS,
   },
+  tls: {
+    servername: 'smtp.gmail.com', // Required for TLS certificate validation
+  }
 });
 
 interface BookingEmailParams {

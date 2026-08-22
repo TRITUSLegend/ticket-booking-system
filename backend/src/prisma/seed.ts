@@ -53,34 +53,7 @@ async function main() {
   await prisma.seat.createMany({ data: seatsData });
   const seats = await prisma.seat.findMany({ where: { layoutId: layout.id } });
 
-  // 4. Event
-  const event = await prisma.event.create({
-    data: { title: 'Rock Concert', description: 'Epic music', type: EventType.CONCERT, organiserId: organiser.id },
-  });
-
-  // 5. Show
-  const showDate = new Date();
-  showDate.setDate(showDate.getDate() + 7);
-
-  const show = await prisma.show.create({
-    data: { eventId: event.id, venueId: venue.id, layoutId: layout.id, date: showDate, time: '20:00' },
-  });
-
-  // 6. Pricing & ShowSeats
-  await prisma.showSeatPricing.createMany({
-    data: [
-      { showId: show.id, category: SeatCategory.PREMIUM, price: 1500 },
-      { showId: show.id, category: SeatCategory.STANDARD, price: 800 },
-    ],
-  });
-
-  await prisma.showSeat.createMany({
-    data: seats.map((s) => ({
-      showId: show.id,
-      seatId: s.id,
-      status: SeatStatus.AVAILABLE,
-    })),
-  });
+  // 4. Seeding of dummy events has been removed per user request.
 
   console.log('✅ Seeding complete!');
 }
