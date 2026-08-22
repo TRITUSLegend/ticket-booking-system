@@ -17,4 +17,11 @@ router.post(
 router.get('/:id', showsController.getById);
 router.get('/event/:eventId', showsController.getByEvent);
 
+router.delete(
+  '/:id',
+  authGuard as RequestHandler,
+  roleGuard('ORGANISER') as RequestHandler,
+  showsController.remove as RequestHandler
+);
+
 export default router;

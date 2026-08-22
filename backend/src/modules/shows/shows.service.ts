@@ -1,4 +1,5 @@
 import { prisma } from '../../config';
+import { sendCancellationEmail } from '../../lib/email';
 import { ApiError } from '../../middleware';
 import { CreateShowInput } from './shows.validation';
 import { SeatStatus } from '@prisma/client';
@@ -115,4 +116,53 @@ export async function getShowsByEvent(eventId: string) {
     },
     orderBy: { date: 'asc' },
   });
+}
+
+export async function deleteShow(showId: string, organiserId: string) {
+  const show = await prisma.show.findUnique({
+    where: { id: showId },
+    include: { event: true },
+  });
+
+  if (!show) {
+    throw ApiError.notFound('Show not found');
+  }
+
+  if (show.event.organiserId !== organiserId) {
+    throw ApiError.forbidden('You can only delete shows for your own events');
+  }
+
+  // Fetch all bookings for this show to send cancellation emails
+  const bookings = await prisma.booking.findMany({
+    where: { showId },
+    include: { customer: true }
+  });
+
+  const uniqueCustomers = new Map();
+  for (const b of bookings) {
+    if (!uniqueCustomers.has(b.customer.email)) {
+      uniqueCustomers.set(b.customer.email, b.customer.name);
+    }
+  }
+
+  // Fire & forget emails
+  for (const [email, name] of Array.from(uniqueCustomers.entries())) {
+    sendCancellationEmail({
+      to: email,
+      customerName: name,
+      eventTitle: `${show.event.title} (Show: ${new Date(show.date).toLocaleDateString()} at ${show.time})`,
+    }).catch(console.error);
+  }
+
+  // Cascade delete all related data in a transaction
+  await prisma.$transaction(async (tx) => {
+    await tx.bookingSeat.deleteMany({ where: { showSeat: { showId } } });
+    await tx.booking.deleteMany({ where: { showId } });
+    await tx.waitlist.deleteMany({ where: { showId } });
+    await tx.showSeat.deleteMany({ where: { showId } });
+    await tx.showSeatPricing.deleteMany({ where: { showId } });
+    await tx.show.delete({ where: { id: showId } });
+  });
+
+  return { success: true };
 }

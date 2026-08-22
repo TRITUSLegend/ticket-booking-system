@@ -87,6 +87,19 @@ export default function EventSummaryPage() {
     }
   };
 
+  const handleDeleteShow = async (showId: string) => {
+    if (!confirm('Are you sure you want to delete this show? This will cancel all bookings for this show and refund customers. This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await fetchApi(`/api/shows/${showId}`, { method: 'DELETE' });
+      window.location.reload();
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete show');
+    }
+  };
+
   if (isLoading) return <div className="p-8 text-center">Loading event summary...</div>;
   if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
   if (!event) return <div className="p-8 text-center text-red-600">Event not found.</div>;
@@ -169,10 +182,18 @@ export default function EventSummaryPage() {
                     </h3>
                     <p className="text-gray-600 text-sm">{show.venue.name} — {show.venue.address}</p>
                   </div>
-                  <div className="text-right mt-2 sm:mt-0">
-                    <p className="text-sm text-gray-500">Total Seats: {show._count.seats}</p>
-                    <p className="text-sm text-gray-500">Bookings: {show.bookings.length}</p>
-                    <p className="text-lg font-bold text-green-600">₹{totalRevenue.toLocaleString()}</p>
+                  <div className="flex flex-col sm:items-end gap-2 mt-2 sm:mt-0">
+                    <div className="text-right">
+                      <p className="text-sm text-gray-500">Total Seats: {show._count.seats}</p>
+                      <p className="text-sm text-gray-500">Bookings: {show.bookings.length}</p>
+                      <p className="text-lg font-bold text-green-600">₹{totalRevenue.toLocaleString()}</p>
+                    </div>
+                    <button 
+                      onClick={() => handleDeleteShow(show.id)}
+                      className="text-sm text-red-600 hover:text-red-800 transition underline"
+                    >
+                      Delete Show
+                    </button>
                   </div>
                 </div>
 

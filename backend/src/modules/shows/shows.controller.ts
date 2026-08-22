@@ -28,3 +28,12 @@ export async function getByEvent(req: Request, res: Response, next: NextFunction
     next(error);
   }
 }
+
+export async function remove(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    await showsService.deleteShow(req.params.id, req.user.userId);
+    res.status(200).json({ status: 'success', message: 'Show deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+}
