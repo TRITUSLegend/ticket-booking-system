@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { fetchApi } from '../../../../lib/api-client';
 import { Button } from '../../../../components/ui/Button';
+import { useAuth } from '../../../../lib/auth-context';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
+  const { user } = useAuth();
   const [event, setEvent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -49,11 +51,13 @@ export default function EventDetailPage() {
               <h3 className="font-bold text-lg">{new Date(show.date).toLocaleDateString()} at {show.time}</h3>
               <p className="text-gray-600">{show.venue.name}, {show.venue.address}</p>
             </div>
-            <Button
-              onClick={() => window.location.href = `/events/${event.id}/shows/${show.id}`}
-            >
-              Select Seats
-            </Button>
+            {(!user || user.role === 'CUSTOMER') && (
+              <Button
+                onClick={() => window.location.href = `/events/${event.id}/shows/${show.id}`}
+              >
+                Select Seats
+              </Button>
+            )}
           </div>
         ))}
         {event.shows.length === 0 && (
