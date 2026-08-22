@@ -10,7 +10,7 @@ function CheckoutContent() {
   const router = useRouter();
   
   const showId = searchParams.get('showId');
-  const seatsParam = searchParams.get('seats');
+  const seatsParam = searchParams.get('seatIds');
   const seatIds = seatsParam ? seatsParam.split(',') : [];
 
   const [isLoading, setIsLoading] = useState(false);

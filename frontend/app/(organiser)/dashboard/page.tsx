@@ -86,9 +86,12 @@ export default function OrganiserDashboard() {
                   <h3 className="text-lg font-bold">{event.title}</h3>
                   <span className="text-sm text-gray-500">{event.type}</span>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex flex-col items-end gap-1">
                   <p className="text-xl font-bold text-green-600">₹{event.totalRevenue.toLocaleString()}</p>
                   <p className="text-sm text-gray-500">{event.totalBooked} tickets</p>
+                  <a href={`/events/${event.id}/summary`} className="text-sm text-blue-600 hover:underline">
+                    View Summary →
+                  </a>
                 </div>
               </div>
 

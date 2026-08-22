@@ -26,7 +26,10 @@ export function Navbar() {
                 </>
               )}
               {user.role === 'ADMIN' && (
-                <a href="/venues" className="text-gray-600 hover:text-gray-900 text-sm">Venues</a>
+                <>
+                  <a href="/venues" className="text-gray-600 hover:text-gray-900 text-sm">Venues</a>
+                  <a href="/stats" className="text-gray-600 hover:text-gray-900 text-sm">Stats</a>
+                </>
               )}
               <span className="text-gray-400 text-sm">{user.name}</span>
               <Button variant="ghost" onClick={logout} className="text-sm">Logout</Button>
