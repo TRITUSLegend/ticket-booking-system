@@ -42,9 +42,17 @@ export default function VenuesPage() {
               <h2 className="text-xl font-bold mb-2">{venue.name}</h2>
               <p className="text-gray-600 text-sm mb-4">{venue.address}</p>
               {venue.layouts?.[0] && (
-                <p className="text-gray-500 text-sm">
-                  Layout: {venue.layouts[0].rows} rows × {venue.layouts[0].columns} columns
-                </p>
+                <div className="text-gray-500 text-sm space-y-1">
+                  <p>
+                    Layout: {venue.layouts[0].rows} rows × {venue.layouts[0].columns} columns 
+                    {venue.layouts[0].shape && ` (${venue.layouts[0].shape})`}
+                  </p>
+                  {venue.supportedEventTypes && venue.supportedEventTypes.length > 0 && (
+                    <p>
+                      Supported Events: {venue.supportedEventTypes.join(', ')}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           ))}
