@@ -31,6 +31,8 @@ export default function EventSummaryPage() {
   const [isSubmittingShow, setIsSubmittingShow] = useState(false);
   const [showError, setShowError] = useState('');
 
+  const router = useRouter();
+
   useEffect(() => {
     if (user?.role !== 'ORGANISER') return;
     const load = async () => {
@@ -46,25 +48,6 @@ export default function EventSummaryPage() {
     };
     load();
   }, [eventId, user]);
-
-  if (isLoading) return <div className="p-8 text-center">Loading event summary...</div>;
-  if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
-  if (!event) return <div className="p-8 text-center text-red-600">Event not found.</div>;
-
-  const router = useRouter();
-
-  const handleDeleteEvent = async () => {
-    if (!confirm('Are you sure you want to delete this event? This will cancel all bookings and refund customers. This action cannot be undone.')) {
-      return;
-    }
-    
-    try {
-      await fetchApi(`/api/events/${eventId}`, { method: 'DELETE' });
-      router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete event');
-    }
-  };
 
   useEffect(() => {
     if (isAddShowModalOpen && event?.type) {
@@ -90,6 +73,23 @@ export default function EventSummaryPage() {
         .catch(console.error);
     }
   }, [venueId]);
+
+  const handleDeleteEvent = async () => {
+    if (!confirm('Are you sure you want to delete this event? This will cancel all bookings and refund customers. This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await fetchApi(`/api/events/${eventId}`, { method: 'DELETE' });
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete event');
+    }
+  };
+
+  if (isLoading) return <div className="p-8 text-center">Loading event summary...</div>;
+  if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
+  if (!event) return <div className="p-8 text-center text-red-600">Event not found.</div>;
 
   const handleAddShow = async (e: React.FormEvent) => {
     e.preventDefault();
