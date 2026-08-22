@@ -26,31 +26,7 @@ async function main() {
     create: { email: 'customer@test.com', name: 'Test Customer', role: Role.CUSTOMER, passwordHash },
   });
 
-  // 2. Venue
-  const venue = await prisma.venue.create({
-    data: { name: 'Grand Arena', address: '123 Main St', createdBy: admin.id },
-  });
-
-  const layout = await prisma.seatLayout.create({
-    data: { venueId: venue.id, rows: 5, columns: 10 },
-  });
-
-  // 3. Seats
-  const seatsData = [];
-  for (let r = 1; r <= 5; r++) {
-    const category = r <= 2 ? 'PREMIUM' : 'STANDARD';
-    const rowLetter = String.fromCharCode(64 + r);
-    for (let c = 1; c <= 10; c++) {
-      seatsData.push({
-        layoutId: layout.id,
-        row: r,
-        column: c,
-        category,
-        label: `${rowLetter}-${c}`,
-      });
-    }
-  }
-  await prisma.seat.createMany({ data: seatsData });
+  // Seeding of dummy venue has been removed per user request.
 
   // 4. Seeding of dummy events has been removed per user request.
 
