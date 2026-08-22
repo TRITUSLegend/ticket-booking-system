@@ -135,6 +135,7 @@ export default function CreateEventPage() {
                       key={cat}
                       label={`${cat} Price (₹)`}
                       type="number"
+                      min="1"
                       value={pricingInputs[cat] || ''}
                       onChange={(e) => setPricingInputs({ ...pricingInputs, [cat]: e.target.value })}
                       required

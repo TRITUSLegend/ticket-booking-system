@@ -106,7 +106,7 @@ export default function EventSummaryPage() {
         body: JSON.stringify({
           eventId,
           venueId,
-          date: showDate,
+          date: new Date(showDate).toISOString(),
           time: showTime,
           pricing,
         }),
@@ -262,6 +262,7 @@ export default function EventSummaryPage() {
                     key={cat}
                     label={`${cat} Price (₹)`}
                     type="number"
+                    min="1"
                     value={pricingInputs[cat] || ''}
                     onChange={(e) => setPricingInputs({ ...pricingInputs, [cat]: e.target.value })}
                     required
