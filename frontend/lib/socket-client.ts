@@ -13,14 +13,6 @@ export const getSocket = () => {
       autoConnect: true,
       withCredentials: true,
     });
-
-    socket.on('connect', () => {
-      console.log('Connected to real-time server');
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Disconnected from real-time server');
-    });
   }
   return socket;
 };
