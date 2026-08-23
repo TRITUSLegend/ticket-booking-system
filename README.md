@@ -213,7 +213,7 @@ Key files:
 
 ## Tests
 
-All three scripts talk to a real database — point `DATABASE_URL` at a scratch
+Both scripts talk to a real database — point `DATABASE_URL` at a scratch
 database, not production. Each one cleans up the rows it creates.
 
 ```bash
@@ -221,7 +221,6 @@ cd backend
 
 npm run test:concurrency   # 20 simultaneous holds on one seat
 npm run test:core          # double-book prevention, waitlist join, offer cascade
-npm run test:smoke         # end-to-end register → hold → checkout
 ```
 
 - **`test:concurrency`** ([`tests/concurrency.test.ts`](backend/tests/concurrency.test.ts)) fires 20 simultaneous
@@ -229,13 +228,6 @@ npm run test:smoke         # end-to-end register → hold → checkout
 - **`test:core`** ([`tests/core-mechanics.test.ts`](backend/tests/core-mechanics.test.ts)) covers the three
   domain mechanisms end to end: concurrent double-hold rejection, joining a waitlist
   on a sold-out category, and the offer cascade after a hold expires.
-- **`test:smoke`** ([`scripts/smoke-test.js`](backend/scripts/smoke-test.js)) runs against a live instance.
-  Defaults to `http://localhost:4000`; override with an argument or `API_URL`:
-
-  ```bash
-  npm run test:smoke -- https://your-backend.onrender.com
-  API_URL=https://your-backend.onrender.com npm run test:smoke
-  ```
 
 ---
 

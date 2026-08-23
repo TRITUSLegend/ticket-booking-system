@@ -12,8 +12,7 @@
     "db:seed": "tsx src/prisma/seed.ts",
     "db:studio": "prisma studio --schema=src/prisma/schema.prisma",
     "test:concurrency": "tsx tests/concurrency.test.ts",
-    "test:core": "tsx tests/core-mechanics.test.ts",
-    "test:smoke": "node scripts/smoke-test.js"
+    "test:core": "tsx tests/core-mechanics.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
