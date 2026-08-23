@@ -3,7 +3,7 @@ import { env } from '../config/env';
 import { generateQrCode } from './qr';
 
 const transporter = nodemailer.createTransport({
-  host: '142.251.10.108', // smtp.gmail.com IPv4 bypass for environments with broken IPv6/WARP
+  host: 'smtp.gmail.com', // Use standard host in production
   port: 465,
   secure: true,
   auth: {
