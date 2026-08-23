@@ -193,5 +193,7 @@ export async function completeOffer(token: string, userId: string) {
     })
   ]);
 
-  return { seatId: seat.seatId, showId: waitlist.showId };
+  // ShowSeat id, not Seat id: this is what /seats/hold and /bookings/checkout
+  // expect in their seatIds arrays, and the frontend forwards it straight there.
+  return { seatId: seat.id, showId: waitlist.showId };
 }
