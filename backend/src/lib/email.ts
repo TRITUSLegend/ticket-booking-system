@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
   tls: {
     servername: 'smtp.gmail.com', // Required for TLS certificate validation
   }
-});
+} as any);
 
 interface BookingEmailParams {
   to: string;
