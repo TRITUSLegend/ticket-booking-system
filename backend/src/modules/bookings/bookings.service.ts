@@ -14,7 +14,7 @@ export async function checkout(data: CheckoutInput, userId: string) {
       SELECT * FROM show_seats
       WHERE "showId" = ${data.showId}
         AND id IN (${Prisma.join(data.seatIds)})
-      FOR UPDATE OF show_seats
+      FOR UPDATE
     `;
 
     if (showSeats.length !== data.seatIds.length) {
