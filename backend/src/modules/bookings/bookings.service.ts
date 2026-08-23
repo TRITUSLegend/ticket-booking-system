@@ -36,7 +36,7 @@ export async function checkout(data: CheckoutInput, userId: string) {
       }
       if (seat.holdExpiresAt && seat.holdExpiresAt <= new Date()) {
         expiredSeats.push(seat.seatId);
-        
+
         // Optimistically fix the state for the next person
         await tx.showSeat.update({
           where: { id: seat.id },
@@ -81,7 +81,6 @@ export async function checkout(data: CheckoutInput, userId: string) {
       totalAmount += Number(pricing.price);
       seatLabels.push(ss.seat.label);
     }
-
 
     // 4. Create Booking
     const booking = await tx.booking.create({
@@ -130,7 +129,7 @@ export async function checkout(data: CheckoutInput, userId: string) {
 
   // Post-commit: Email and Socket
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  
+
   if (user) {
     sendBookingConfirmation({
       to: user.email,

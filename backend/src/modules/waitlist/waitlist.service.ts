@@ -35,10 +35,10 @@ export async function processWaitlistOnCancellation(showId: string, category: st
 
   const result = await prisma.$transaction(async (tx) => {
     // Find oldest waiting entry
-    const entry = await tx.$queryRaw<any[]>`
+    const entry = await tx.$queryRaw<{ id: string; customerId: string }[]>`
       SELECT id, "customerId"
       FROM waitlist
-      WHERE "showId" = ${showId} 
+      WHERE "showId" = ${showId}
         AND category = ${category}
         AND status = 'WAITING'
       ORDER BY "createdAt" ASC
@@ -109,7 +109,6 @@ export async function processWaitlistOnCancellation(showId: string, category: st
         seatId,
         status: SeatStatus.OFFERED,
       });
-      // Optionally emit specifically to user if they have a private room
     }
   } else {
     // Broadcast it's available
@@ -126,7 +125,7 @@ export async function processWaitlistOnCancellation(showId: string, category: st
 
 export async function expireOffer(waitlistId: string) {
   const waitlist = await prisma.waitlist.findUnique({ where: { id: waitlistId } });
-  
+
   if (!waitlist || waitlist.status !== WaitlistStatus.OFFERED) {
     return;
   }
@@ -159,7 +158,7 @@ export async function completeOffer(token: string, userId: string) {
   }
 
   const waitlist = await prisma.waitlist.findUnique({ where: { id: verified.waitlistId } });
-  
+
   if (!waitlist || waitlist.customerId !== userId) {
     throw ApiError.forbidden('Offer does not belong to you');
   }
@@ -168,11 +167,8 @@ export async function completeOffer(token: string, userId: string) {
     throw ApiError.conflict(`Offer is no longer active (Status: ${waitlist.status})`);
   }
 
-  // To complete it, we could automatically put it into the cart and call checkout,
-  // or return the seat ID so the frontend can route them to checkout.
-  // For simplicity, let's just mark it HELD for them with a new TTL, and return the seatId.
-  // Then they use normal checkout flow.
-  
+  // Convert the offer into a normal hold with a fresh TTL and hand the seat back
+  // to the frontend, which routes the customer through the standard checkout flow.
   const seat = await prisma.showSeat.findFirst({
     where: { showId: waitlist.showId, status: SeatStatus.OFFERED, heldById: userId },
   });
@@ -182,17 +178,17 @@ export async function completeOffer(token: string, userId: string) {
   }
 
   const holdTtlMs = env.SEAT_HOLD_TTL_SECONDS * 1000;
-  
+
   await prisma.$transaction([
     prisma.waitlist.update({
       where: { id: waitlist.id },
-      data: { status: WaitlistStatus.BOOKED }, // Or processed
+      data: { status: WaitlistStatus.BOOKED },
     }),
     prisma.showSeat.update({
       where: { id: seat.id },
-      data: { 
-        status: SeatStatus.HELD, 
-        holdExpiresAt: new Date(Date.now() + holdTtlMs) 
+      data: {
+        status: SeatStatus.HELD,
+        holdExpiresAt: new Date(Date.now() + holdTtlMs)
       }
     })
   ]);
