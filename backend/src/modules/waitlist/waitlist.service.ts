@@ -39,7 +39,7 @@ export async function processWaitlistOnCancellation(showId: string, category: st
       SELECT id, "customerId"
       FROM waitlist
       WHERE "showId" = ${showId} 
-        AND category = ${category}::"SeatCategory"
+        AND category = ${category}
         AND status = 'WAITING'
       ORDER BY "createdAt" ASC
       LIMIT 1
