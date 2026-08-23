@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { prisma } from '../../config';
 import { ApiError } from '../../middleware';
 import { CheckoutInput } from './bookings.validation';
@@ -81,6 +82,7 @@ export async function checkout(data: CheckoutInput, userId: string) {
       seatLabels.push(ss.seat.label);
     }
 
+
     // 4. Create Booking
     const booking = await tx.booking.create({
       data: {
@@ -88,7 +90,7 @@ export async function checkout(data: CheckoutInput, userId: string) {
         showId: data.showId,
         status: BookingStatus.CONFIRMED,
         totalAmount,
-        qrReference: 'PENDING', // Will update immediately
+        qrReference: 'PENDING_' + crypto.randomUUID(), // Prevent unique constraint collisions
       },
     });
 
