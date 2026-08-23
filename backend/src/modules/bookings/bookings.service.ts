@@ -123,6 +123,9 @@ export async function checkout(data: CheckoutInput, userId: string) {
       showInfo,
       seatLabels,
     };
+  }, {
+    maxWait: 5000, // default is 2000
+    timeout: 20000, // default is 5000
   });
 
   // Post-commit: Email and Socket
