@@ -172,7 +172,7 @@ model ShowSeat {
   booking      Booking?      @relation(fields: [bookingId], references: [id])
   bookingSeats BookingSeat[]
 
-  // Standard unique constraint ?" the partial index is added via raw SQL migration
+  // Standard unique constraint - the partial index is added via raw SQL migration
   @@unique([showId, seatId])
   @@map("show_seats")
 }

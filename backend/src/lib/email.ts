@@ -59,17 +59,17 @@ interface BookingEmailParams {
 
 export async function sendBookingConfirmation(params: BookingEmailParams): Promise<boolean> {
   const qrBuffer = await generateQrCode(params.qrReference);
-  
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #1a1a2e;">Booking Confirmed! ???</h1>
+      <h1 style="color: #1a1a2e;">Booking Confirmed! &#127881;</h1>
       <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin: 16px 0;">
         <h2 style="margin-top: 0; color: #16213e;">${params.eventTitle}</h2>
         <p><strong>Date:</strong> ${params.showDate}</p>
         <p><strong>Time:</strong> ${params.showTime}</p>
         <p><strong>Venue:</strong> ${params.venueName}</p>
         <p><strong>Seats:</strong> ${params.seats.join(', ')}</p>
-        <p><strong>Total:</strong> ?${params.totalAmount}</p>
+        <p><strong>Total:</strong> &#8377;${params.totalAmount}</p>
         <p><strong>Booking ID:</strong> ${params.bookingId}</p>
       </div>
       <div style="text-align: center; margin: 24px 0;">
@@ -80,7 +80,7 @@ export async function sendBookingConfirmation(params: BookingEmailParams): Promi
   `;
 
   return sendBrevoEmail(
-    `Booking Confirmed — ${params.eventTitle}`,
+    `Booking Confirmed - ${params.eventTitle}`,
     params.to,
     html,
     { content: qrBuffer.toString('base64'), name: 'qrcode.png' }
@@ -102,7 +102,7 @@ interface WaitlistOfferEmailParams {
 export async function sendWaitlistOfferEmail(params: WaitlistOfferEmailParams): Promise<boolean> {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #1a1a2e;">Good News! ???</h1>
+      <h1 style="color: #1a1a2e;">Good News! &#127881;</h1>
       <p>A <strong>${params.category}</strong> seat has become available for:</p>
       <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin: 16px 0;">
         <h2 style="margin-top: 0; color: #16213e;">${params.eventTitle}</h2>
@@ -112,7 +112,7 @@ export async function sendWaitlistOfferEmail(params: WaitlistOfferEmailParams): 
       </div>
       <p>This offer expires at <strong>${params.offerExpiresAt}</strong>.</p>
       <div style="text-align: center; margin: 24px 0;">
-        <a href="${params.offerLink}" 
+        <a href="${params.offerLink}"
            style="background: #e94560; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
           Complete Your Booking
         </a>
@@ -124,7 +124,7 @@ export async function sendWaitlistOfferEmail(params: WaitlistOfferEmailParams): 
   `;
 
   return sendBrevoEmail(
-    `A seat is available! — ${params.eventTitle}`,
+    `A seat is available! - ${params.eventTitle}`,
     params.to,
     html
   );
@@ -148,7 +148,7 @@ export async function sendCancellationEmail(params: CancellationEmailParams): Pr
   `;
 
   return sendBrevoEmail(
-    `Event Cancelled — ${params.eventTitle}`,
+    `Event Cancelled - ${params.eventTitle}`,
     params.to,
     html
   );
