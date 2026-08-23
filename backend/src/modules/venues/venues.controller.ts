@@ -32,7 +32,7 @@ export async function getById(req: Request, res: Response, next: NextFunction) {
 
 export async function updateCategories(req: Request, res: Response, next: NextFunction) {
   try {
-    const result = await venuesService.updateVenueCategories(req.params.id, req.body);
+    const result = await venuesService.updateVenueCategories(req.params.id as string, req.body);
     res.status(200).json({ status: 'success', data: result });
   } catch (error) {
     next(error);
