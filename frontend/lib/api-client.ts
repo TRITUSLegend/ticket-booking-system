@@ -78,7 +78,7 @@ export async function fetchApi<T>(endpoint: string, options: RequestOptions = {}
             ...config,
             headers: newHeaders,
           });
-          
+
           if (!retryResponse.ok) {
             const errorData = await retryResponse.json();
             reject(new Error(errorData.message || 'API request failed'));
@@ -97,8 +97,8 @@ export async function fetchApi<T>(endpoint: string, options: RequestOptions = {}
     try {
       const errorData = await response.json();
       errorMsg = errorData.message || errorMsg;
-    } catch (e) {
-      // Not JSON
+    } catch {
+      // Response body wasn't JSON — fall back to the generic message
     }
     throw new Error(errorMsg);
   }

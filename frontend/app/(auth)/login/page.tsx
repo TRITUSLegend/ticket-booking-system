@@ -29,7 +29,7 @@ function LoginContent() {
       });
 
       login(res.data.accessToken, res.data.user);
-      
+
       const redirect = searchParams.get('redirect');
       if (redirect) {
         router.push(redirect);
@@ -79,7 +79,7 @@ function LoginContent() {
           </div>
           <div className="text-sm text-center">
             <a href="/register" className="font-medium text-primary hover:text-blue-500">
-              Don't have an account? Register
+              Don&apos;t have an account? Register
             </a>
           </div>
         </form>

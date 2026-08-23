@@ -12,6 +12,13 @@ interface CategoryAssignment {
   category: string;
 }
 
+// Map layout shapes to allowed event types
+const SHAPE_EVENT_MAPPING: Record<string, string[]> = {
+  RECTANGULAR: ['MOVIE'],
+  STAGE: ['THEATER', 'LIVE_EVENT', 'COMEDY'],
+  CIRCULAR: ['SPORTS', 'CONCERT']
+};
+
 export default function CreateVenuePage() {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -26,13 +33,6 @@ export default function CreateVenuePage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [supportedEventTypes, setSupportedEventTypes] = useState<string[]>([]);
-
-  // Map layout shapes to allowed event types
-  const SHAPE_EVENT_MAPPING: Record<string, string[]> = {
-    RECTANGULAR: ['MOVIE'],
-    STAGE: ['THEATER', 'LIVE_EVENT', 'COMEDY'],
-    CIRCULAR: ['SPORTS', 'CONCERT']
-  };
 
   // Sync supported events when shape changes (remove unsupported ones)
   React.useEffect(() => {
@@ -126,7 +126,7 @@ export default function CreateVenuePage() {
       const row = r + 1;
       const cat = getCategoryForRow(row);
       const bgColor = getCategoryColor(cat);
-      
+
       return (
         <div key={row} className="flex items-center justify-center gap-2 mb-1">
           <span className="w-5 text-xs text-gray-400 text-right">{String.fromCharCode(64 + row)}</span>
@@ -184,7 +184,7 @@ export default function CreateVenuePage() {
                   );
                 })}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Select which events this venue will host from the shape's supported list.</p>
+              <p className="text-xs text-gray-500 mt-1">Select which events this venue will host from the shape&apos;s supported list.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -197,7 +197,7 @@ export default function CreateVenuePage() {
                 <h3 className="font-semibold text-sm">Category Assignments</h3>
                 <button type="button" className="text-primary text-sm hover:underline" onClick={addAssignment}>+ Add</button>
               </div>
-              
+
               {shape === 'CIRCULAR' && (
                 <p className="text-xs text-blue-600 mb-3 bg-blue-50 p-2 rounded">
                   For circular layouts, assignments are mirrored symmetrically from the pitch outwards (1 to {Math.ceil(Number(rows) / 2) || 1}).

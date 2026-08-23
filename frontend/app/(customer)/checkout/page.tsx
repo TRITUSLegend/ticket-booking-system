@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchApi } from '../../../lib/api-client';
 import { Button } from '../../../components/ui/Button';
@@ -8,10 +8,10 @@ import { Button } from '../../../components/ui/Button';
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
+
   const showId = searchParams.get('showId');
   const seatsParam = searchParams.get('seatIds');
-  const seatIds = seatsParam ? seatsParam.split(',') : [];
+  const seatIds = useMemo(() => (seatsParam ? seatsParam.split(',') : []), [seatsParam]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -74,15 +74,15 @@ function CheckoutContent() {
         <p className="text-gray-600 mb-8">
           You are about to book {seatIds.length} seat(s).
         </p>
-        
+
         {error && (
           <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">
             {error}
           </div>
         )}
 
-        <Button 
-          className="w-full h-12 text-lg" 
+        <Button
+          className="w-full h-12 text-lg"
           onClick={handleCheckout}
           isLoading={isLoading}
         >
