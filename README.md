@@ -1,5 +1,6 @@
 # Ticket Booking System
 **Live Application:** https://ticket-booking-system-six-rouge.vercel.app
+
 A production-quality ticket booking system for movies and concerts with real-time seat selection, concurrency-safe holds, automated waitlist management, and QR-based confirmation emails.
 
 ## Tech Stack
