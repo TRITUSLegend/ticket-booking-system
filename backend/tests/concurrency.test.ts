@@ -1,11 +1,11 @@
-import { PrismaClient, Role, EventType, SeatCategory, SeatStatus } from '@prisma/client';
+import { PrismaClient, Role, EventType, SeatStatus } from '@prisma/client';
 import { holdSeats } from '../src/modules/seats/seats.service';
 
 const prisma = new PrismaClient();
 
 async function runConcurrencyTest() {
   console.log('--- Starting Concurrency Test ---');
-  
+
   // 1. Setup Data
   const admin = await prisma.user.create({
     data: { email: 'admin-test@test.com', passwordHash: 'hash', name: 'Admin', role: Role.ADMIN },
@@ -20,7 +20,7 @@ async function runConcurrencyTest() {
   });
 
   const seat = await prisma.seat.create({
-    data: { layoutId: layout.id, row: 1, column: 1, category: SeatCategory.PREMIUM, label: 'A-1' },
+    data: { layoutId: layout.id, row: 1, column: 1, category: 'PREMIUM', label: 'A-1' },
   });
 
   const event = await prisma.event.create({
@@ -48,7 +48,7 @@ async function runConcurrencyTest() {
 
   // 2. Fire concurrent requests
   const results = await Promise.allSettled(
-    users.map((user) => holdSeats(show.id, [seat.id], user.id))
+    users.map((user) => holdSeats(show.id, [showSeat.id], user.id))
   );
 
   // 3. Analyze results
@@ -81,7 +81,11 @@ async function runConcurrencyTest() {
   await prisma.$disconnect();
 }
 
-runConcurrencyTest().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Explicit exit: the BullMQ queue holds an open Redis connection that would
+// otherwise keep the event loop alive after the test finishes.
+runConcurrencyTest()
+  .then(() => process.exit(0))
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });

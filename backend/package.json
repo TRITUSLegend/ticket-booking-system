@@ -11,7 +11,9 @@
     "db:migrate:deploy": "prisma migrate deploy --schema=src/prisma/schema.prisma",
     "db:seed": "tsx src/prisma/seed.ts",
     "db:studio": "prisma studio --schema=src/prisma/schema.prisma",
-    "test:concurrency": "tsx tests/concurrency.test.ts"
+    "test:concurrency": "tsx tests/concurrency.test.ts",
+    "test:core": "tsx tests/core-mechanics.test.ts",
+    "test:smoke": "node scripts/smoke-test.js"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
