@@ -34,11 +34,11 @@ export async function createVenue(data: CreateVenueInput, adminId: string) {
     'STAGE': ['THEATER', 'LIVE_EVENT', 'COMEDY'],
     'CIRCULAR': ['SPORTS', 'CONCERT']
   };
-  
+
   const allowedTypes: EventType[] = shapeMapping[data.layout.shape] || [];
-  
+
   const finalEventTypes = data.supportedEventTypes.filter(t => allowedTypes.includes(t));
-  
+
   if (finalEventTypes.length === 0) {
     throw ApiError.badRequest(`You must select at least one valid event type for the ${data.layout.shape} shape.`);
   }
@@ -66,14 +66,14 @@ export async function createVenue(data: CreateVenueInput, adminId: string) {
     // Generate seats
     const seatsToCreate = [];
     const midPoint = Math.ceil(data.layout.rows / 2);
-    
+
     for (let r = 1; r <= data.layout.rows; r++) {
       // Find the category for this row. For CIRCULAR, mirror the assignments based on distance from pitch
       let distanceRow = r;
       if (data.layout.shape === 'CIRCULAR') {
         distanceRow = r <= midPoint ? r : r - midPoint;
       }
-      
+
       const category = data.categoryAssignments.find(
         (a) => distanceRow >= a.startRow && distanceRow <= a.endRow
       )!.category;
@@ -193,7 +193,7 @@ export async function updateVenueCategories(venueId: string, data: UpdateVenueCa
       if (shape === 'CIRCULAR') {
         distanceRow = r <= midPoint ? r : r - midPoint;
       }
-      
+
       const category = data.categoryAssignments.find(
         (a) => distanceRow >= a.startRow && distanceRow <= a.endRow
       )!.category;

@@ -142,7 +142,7 @@ export function SeatGrid({ showId, initialSeats, shape = 'RECTANGULAR', onSelect
   return (
     <div className="overflow-x-auto p-4 w-full">
       <div className="min-w-max mx-auto">
-        
+
         {shape === 'RECTANGULAR' && (
           <>
             <div className="w-3/4 mx-auto h-8 bg-gray-200 rounded-b-[50%] border-t-4 border-gray-400 text-center text-xs font-semibold text-gray-500 pt-1 mb-12 shadow-inner">

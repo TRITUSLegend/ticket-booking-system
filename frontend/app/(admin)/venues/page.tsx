@@ -42,7 +42,7 @@ export default function VenuesPage() {
               <div>
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-xl font-bold">{venue.name}</h2>
-                  <button 
+                  <button
                     onClick={() => window.location.href = `/venues/${venue.id}/edit`}
                     className="text-sm text-primary hover:underline"
                   >
@@ -53,7 +53,7 @@ export default function VenuesPage() {
               {venue.layouts?.[0] && (
                 <div className="text-gray-500 text-sm space-y-1">
                   <p>
-                    Layout: {venue.layouts[0].rows} rows × {venue.layouts[0].columns} columns 
+                    Layout: {venue.layouts[0].rows} rows × {venue.layouts[0].columns} columns
                     {venue.layouts[0].shape && ` (${venue.layouts[0].shape})`}
                   </p>
                   {venue.supportedEventTypes && venue.supportedEventTypes.length > 0 && (

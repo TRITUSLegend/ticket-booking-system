@@ -20,10 +20,10 @@ export default function ShowSeatMapPage() {
   const [showData, setShowData] = useState<any>(null);
   const [initialSeats, setInitialSeats] = useState<SeatData[]>([]);
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [isHolding, setIsHolding] = useState(false);
-  
+
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const [waitlistCategory, setWaitlistCategory] = useState('STANDARD');
 
@@ -35,7 +35,7 @@ export default function ShowSeatMapPage() {
           fetchApi<any>(`/api/shows/${showId}`, { requireAuth: false }),
           fetchApi<any>(`/api/seats/${showId}`, { requireAuth: false })
         ]);
-        
+
         setShowData(showRes.data);
         setInitialSeats(seatsRes.data);
         if (showRes.data?.pricing?.[0]) {
@@ -114,11 +114,11 @@ export default function ShowSeatMapPage() {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8">
       <div className="flex flex-col md:flex-row gap-8">
-        
+
         {/* Left Column: Seat Map */}
         <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-x-auto">
           <div className="flex justify-center min-w-max">
-            <SeatGrid 
+            <SeatGrid
               showId={showId}
               initialSeats={initialSeats}
               shape={showData.layout.shape}
@@ -151,7 +151,7 @@ export default function ShowSeatMapPage() {
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
             <h3 className="font-bold mb-4">Your Selection</h3>
-            
+
             {selectedSeatsList.length === 0 ? (
               <p className="text-gray-500 text-sm">No seats selected</p>
             ) : (
@@ -163,14 +163,14 @@ export default function ShowSeatMapPage() {
                     </span>
                   ))}
                 </div>
-                
+
                 <div className="flex justify-between font-bold text-lg mb-6 border-t pt-4">
                   <span>Total</span>
                   <span>₹{totalPrice}</span>
                 </div>
 
-                <Button 
-                  className="w-full mb-2" 
+                <Button
+                  className="w-full mb-2"
                   onClick={handleHoldSeats}
                   isLoading={isHolding}
                 >
@@ -184,8 +184,8 @@ export default function ShowSeatMapPage() {
 
             <div className="mt-6 pt-4 border-t border-gray-100">
               <p className="text-sm text-gray-600 mb-3 text-center">Show full? Join the waitlist.</p>
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 className="w-full"
                 onClick={() => setIsWaitlistModalOpen(true)}
               >
@@ -196,8 +196,8 @@ export default function ShowSeatMapPage() {
         </div>
       </div>
 
-      <Modal 
-        isOpen={isWaitlistModalOpen} 
+      <Modal
+        isOpen={isWaitlistModalOpen}
         onClose={() => setIsWaitlistModalOpen(false)}
         title="Join Waitlist"
       >
@@ -205,10 +205,10 @@ export default function ShowSeatMapPage() {
           <p className="text-gray-600 text-sm">
             If tickets become available due to cancellations, waitlisted customers are automatically offered the tickets in order.
           </p>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Seat Category</label>
-            <select 
+            <select
               className="w-full rounded-md border border-gray-300 p-2"
               value={waitlistCategory}
               onChange={(e) => setWaitlistCategory(e.target.value)}

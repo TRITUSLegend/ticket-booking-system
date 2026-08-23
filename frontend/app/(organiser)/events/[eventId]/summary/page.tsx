@@ -78,7 +78,7 @@ export default function EventSummaryPage() {
     if (!confirm('Are you sure you want to delete this event? This will cancel all bookings and refund customers. This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       await fetchApi(`/api/events/${eventId}`, { method: 'DELETE' });
       router.push('/dashboard');
@@ -91,7 +91,7 @@ export default function EventSummaryPage() {
     if (!confirm('Are you sure you want to delete this show? This will cancel all bookings for this show and refund customers. This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       await fetchApi(`/api/shows/${showId}`, { method: 'DELETE' });
       window.location.reload();
@@ -145,13 +145,13 @@ export default function EventSummaryPage() {
           </span>
         </div>
         <div className="flex gap-4 mt-4 md:mt-0">
-          <button 
+          <button
             onClick={() => setIsAddShowModalOpen(true)}
             className="px-4 py-2 bg-primary text-white rounded font-medium hover:bg-blue-700 transition"
           >
             Schedule Additional Show
           </button>
-          <button 
+          <button
             onClick={handleDeleteEvent}
             className="px-4 py-2 bg-red-600 text-white rounded font-medium hover:bg-red-700 transition"
           >
@@ -188,7 +188,7 @@ export default function EventSummaryPage() {
                       <p className="text-sm text-gray-500">Bookings: {show.bookings.length}</p>
                       <p className="text-lg font-bold text-green-600">₹{totalRevenue.toLocaleString()}</p>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleDeleteShow(show.id)}
                       className="text-sm text-red-600 hover:text-red-800 transition underline"
                     >
@@ -273,7 +273,7 @@ export default function EventSummaryPage() {
           </div>
           <Input label="Show Date" type="date" value={showDate} onChange={(e) => setShowDate(e.target.value)} required />
           <Input label="Show Time" type="time" value={showTime} onChange={(e) => setShowTime(e.target.value)} required />
-          
+
           {venueCategories.length > 0 && (
             <div className="pt-2 border-t border-gray-100">
               <h4 className="text-sm font-medium text-gray-700 mb-2">Set Pricing per Category</h4>

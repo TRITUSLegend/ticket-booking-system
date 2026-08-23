@@ -125,7 +125,7 @@ export default function CreateEventPage() {
             </div>
             <Input label="Show Date" type="date" value={showDate} onChange={(e) => setShowDate(e.target.value)} required />
             <Input label="Show Time" type="time" value={showTime} onChange={(e) => setShowTime(e.target.value)} required />
-            
+
             {venueCategories.length > 0 && (
               <div className="pt-2 border-t border-gray-100">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Set Pricing per Category</h4>

@@ -30,7 +30,7 @@ export default function RegisterPage() {
       });
 
       login(res.data.accessToken, res.data.user);
-      
+
       if (res.data.user.role === 'ADMIN') router.push('/venues');
       else if (res.data.user.role === 'ORGANISER') router.push('/dashboard');
       else router.push('/events');

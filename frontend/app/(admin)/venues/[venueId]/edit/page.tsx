@@ -13,7 +13,7 @@ export default function EditVenueCategoriesPage() {
 
   const [venue, setVenue] = useState<any>(null);
   const [assignments, setAssignments] = useState<{ startRow: number; endRow: number; category: string }[]>([]);
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
@@ -23,11 +23,11 @@ export default function EditVenueCategoriesPage() {
       try {
         const res = await fetchApi<{ data: any }>(`/api/venues/${venueId}`);
         setVenue(res.data);
-        
+
         const shape = res.data.layouts[0].shape;
         const rows = res.data.layouts[0].rows;
         const maxRow = shape === 'CIRCULAR' ? Math.ceil(rows / 2) : rows;
-        
+
         setAssignments([{ startRow: 1, endRow: maxRow, category: 'Standard' }]);
       } catch (err: any) {
         setError(err.message || 'Failed to load venue');
@@ -109,7 +109,7 @@ export default function EditVenueCategoriesPage() {
               <h3 className="font-semibold">Category Assignments</h3>
               <button type="button" className="text-primary text-sm hover:underline font-medium" onClick={addAssignment}>+ Add Row Range</button>
             </div>
-            
+
             {layout.shape === 'CIRCULAR' && (
               <p className="text-xs text-blue-600 mb-4 bg-blue-50 p-2 rounded">
                 For circular layouts, assignments are mirrored symmetrically from the pitch outwards (1 to {maxRow}).

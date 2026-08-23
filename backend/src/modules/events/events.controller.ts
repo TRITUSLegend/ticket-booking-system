@@ -22,7 +22,7 @@ export async function list(req: Request, res: Response, next: NextFunction) {
     if (search && typeof search === 'string') {
       filters.search = search;
     }
-    
+
     const events = await eventsService.getEvents(filters);
     res.status(200).json({ status: 'success', data: events });
   } catch (error) {

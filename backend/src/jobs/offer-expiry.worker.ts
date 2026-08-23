@@ -7,7 +7,7 @@ export const offerExpiryWorker = new Worker(
   async (job) => {
     const { waitlistId } = job.data;
     console.log(`[Job] Executing offer-expiry for waitlist ${waitlistId}`);
-    
+
     // Call the service to expire the offer and cascade to next in waitlist
     await expireOffer(waitlistId);
   },

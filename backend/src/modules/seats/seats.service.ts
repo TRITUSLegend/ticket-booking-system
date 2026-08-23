@@ -110,11 +110,11 @@ export async function holdSeats(
   const result = await prisma.$transaction(async (tx) => {
     // Step 1: Row-level lock via SELECT FOR UPDATE
     const showSeats = await tx.$queryRaw<ShowSeatWithSeat[]>`
-      SELECT ss.*, 
+      SELECT ss.*,
              json_build_object(
-               'row', s."row", 
-               'column', s."column", 
-               'category', s."category", 
+               'row', s."row",
+               'column', s."column",
+               'category', s."category",
                'label', s."label"
              ) as seat
       FROM show_seats ss

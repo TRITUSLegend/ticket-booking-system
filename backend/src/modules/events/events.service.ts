@@ -15,11 +15,11 @@ export async function createEvent(data: CreateEventInput, organiserId: string) {
 
 export async function getEvents(filters?: { type?: EventType; search?: string }) {
   const where: Prisma.EventWhereInput = {};
-  
+
   if (filters?.type) {
     where.type = filters.type;
   }
-  
+
   if (filters?.search) {
     where.title = {
       contains: filters.search,
