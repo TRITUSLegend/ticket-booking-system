@@ -6,6 +6,7 @@ const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com', // Use standard host in production
   port: 465,
   secure: true,
+  family: 4, // Force IPv4 to bypass Render's broken IPv6 network routes
   auth: {
     user: env.SMTP_USER,
     pass: env.SMTP_PASS,
