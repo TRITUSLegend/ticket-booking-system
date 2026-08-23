@@ -11,7 +11,8 @@ const envSchema = z.object({
   SEAT_HOLD_TTL_SECONDS: z.coerce.number().int().positive().default(600),
   WAITLIST_OFFER_TTL_SECONDS: z.coerce.number().int().positive().default(1800),
   SMTP_USER: z.string().email(),
-  SMTP_PASS: z.string().min(1),
+  SMTP_PASS: z.string().optional(),
+  BREVO_API_KEY: z.string().optional(),
   PORT: z.coerce.number().int().positive().default(4000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   FRONTEND_URL: z.string().url().default('http://localhost:3000'),
@@ -26,7 +27,7 @@ function loadEnv() {
     const missing = Object.entries(formatted)
       .map(([key, errors]) => `  ${key}: ${errors?.join(', ')}`)
       .join('\n');
-    console.error(`❌ Environment validation failed:\n${missing}`);
+    console.error(`Environment validation failed:\n${missing}`);
     process.exit(1);
   }
 
