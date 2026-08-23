@@ -75,8 +75,8 @@ export default function EditVenueCategoriesPage() {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center">Loading venue...</div>;
-  if (!venue) return <div className="p-8 text-center text-red-600">Venue not found</div>;
+  if (isLoading) return <div className="p-8 text-center text-white/60">Loading venue...</div>;
+  if (!venue) return <div className="p-8 text-center text-red-400">Venue not found</div>;
 
   const layout = venue.layouts[0];
   const maxRow = layout.shape === 'CIRCULAR' ? Math.ceil(layout.rows / 2) : layout.rows;
@@ -84,34 +84,34 @@ export default function EditVenueCategoriesPage() {
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
       <div className="flex items-center gap-4 mb-8">
-        <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-900">
+        <button onClick={() => router.back()} className="text-white/40 hover:text-white/80 transition-colors">
           &larr; Back
         </button>
-        <h1 className="text-3xl font-bold">Edit Seat Categories</h1>
+        <h1 className="text-3xl font-bold text-white">Edit Seat Categories</h1>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="mb-6 pb-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold">{venue.name}</h2>
-          <p className="text-gray-500 text-sm mt-1">
+      <div className="glass-card p-6">
+        <div className="mb-6 pb-6 border-b border-white/[0.06]">
+          <h2 className="text-xl font-semibold text-white">{venue.name}</h2>
+          <p className="text-white/40 text-sm mt-1">
             Shape: {layout.shape} | Rows: {layout.rows} | Columns: {layout.columns}
           </p>
-          <p className="text-xs text-yellow-600 mt-2 bg-yellow-50 p-2 rounded">
+          <p className="text-xs text-yellow-400 mt-2 bg-yellow-500/10 border border-yellow-500/20 p-2 rounded-lg">
             Note: You are overwriting all existing seat categories for this venue. This action is only allowed if no shows have been scheduled here yet.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && <div className="text-red-500 text-sm bg-red-50 p-3 rounded">{error}</div>}
+          {error && <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 p-3 rounded-lg">{error}</div>}
 
           <div>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold">Category Assignments</h3>
-              <button type="button" className="text-primary text-sm hover:underline font-medium" onClick={addAssignment}>+ Add Row Range</button>
+              <h3 className="font-semibold text-white">Category Assignments</h3>
+              <button type="button" className="text-blue-400 hover:text-blue-300 text-sm hover:underline font-medium" onClick={addAssignment}>+ Add Row Range</button>
             </div>
 
             {layout.shape === 'CIRCULAR' && (
-              <p className="text-xs text-blue-600 mb-4 bg-blue-50 p-2 rounded">
+              <p className="text-xs text-blue-400 mb-4 bg-blue-500/10 border border-blue-500/20 p-2 rounded-lg">
                 For circular layouts, assignments are mirrored symmetrically from the pitch outwards (1 to {maxRow}).
               </p>
             )}
@@ -120,7 +120,7 @@ export default function EditVenueCategoriesPage() {
               {assignments.map((a, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <Input type="number" min="1" max={maxRow} value={String(a.startRow)} onChange={(e: any) => updateAssignment(i, 'startRow', e.target.value)} className="w-24" />
-                  <span className="text-gray-400">to</span>
+                  <span className="text-white/40">to</span>
                   <Input type="number" min="1" max={maxRow} value={String(a.endRow)} onChange={(e: any) => updateAssignment(i, 'endRow', e.target.value)} className="w-24" />
                   <Input
                     label=""
@@ -129,7 +129,7 @@ export default function EditVenueCategoriesPage() {
                     onChange={(e: any) => updateAssignment(i, 'category', e.target.value)}
                   />
                   {assignments.length > 1 && (
-                    <button type="button" className="text-red-400 hover:text-red-600 text-xl font-bold ml-2" onClick={() => removeAssignment(i)}>&times;</button>
+                    <button type="button" className="text-red-400 hover:text-red-300 text-xl font-bold ml-2" onClick={() => removeAssignment(i)}>&times;</button>
                   )}
                 </div>
               ))}

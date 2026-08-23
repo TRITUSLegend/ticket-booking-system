@@ -43,7 +43,7 @@ export default function OrganiserDashboard() {
     load();
   }, [user]);
 
-  if (isLoading) return <div className="p-8 text-center">Loading dashboard...</div>;
+  if (isLoading) return <div className="p-8 text-center text-white/60">Loading dashboard...</div>;
 
   const totalRevenue = events.reduce((sum, e) => sum + e.totalRevenue, 0);
   const totalBooked = events.reduce((sum, e) => sum + e.totalBooked, 0);
@@ -51,54 +51,54 @@ export default function OrganiserDashboard() {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Organiser Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white">Organiser Dashboard</h1>
         <Button onClick={() => window.location.href = '/events/create'}>+ Create Event</Button>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-500">Total Events</p>
-          <p className="text-3xl font-bold">{events.length}</p>
+        <div className="glass-card p-6">
+          <p className="text-sm text-white/50">Total Events</p>
+          <p className="text-3xl font-bold text-white mt-1">{events.length}</p>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-500">Total Tickets Sold</p>
-          <p className="text-3xl font-bold">{totalBooked}</p>
+        <div className="glass-card p-6">
+          <p className="text-sm text-white/50">Total Tickets Sold</p>
+          <p className="text-3xl font-bold text-white mt-1">{totalBooked}</p>
         </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-500">Total Revenue</p>
-          <p className="text-3xl font-bold">₹{totalRevenue.toLocaleString()}</p>
+        <div className="glass-card p-6">
+          <p className="text-sm text-white/50">Total Revenue</p>
+          <p className="text-3xl font-bold text-green-400 mt-1">₹{totalRevenue.toLocaleString()}</p>
         </div>
       </div>
 
       {/* Events Breakdown */}
-      <h2 className="text-xl font-bold mb-4">Events</h2>
+      <h2 className="text-xl font-bold text-white mb-4">Events</h2>
       {events.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <p className="text-gray-500">No events created yet.</p>
+        <div className="glass-card p-12 text-center">
+          <p className="text-white/40">No events created yet.</p>
         </div>
       ) : (
         <div className="space-y-6">
           {events.map((event) => (
-            <div key={event.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div key={event.id} className="glass-card p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-bold">{event.title}</h3>
-                  <span className="text-sm text-gray-500">{event.type}</span>
+                  <h3 className="text-lg font-bold text-white">{event.title}</h3>
+                  <span className="text-sm text-white/50">{event.type}</span>
                 </div>
                 <div className="text-right flex flex-col items-end gap-1">
-                  <p className="text-xl font-bold text-green-600">₹{event.totalRevenue.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500">{event.totalBooked} tickets</p>
-                  <a href={`/events/${event.id}/summary`} className="text-sm text-blue-600 hover:underline">
+                  <p className="text-xl font-bold text-green-400">₹{event.totalRevenue.toLocaleString()}</p>
+                  <p className="text-sm text-white/50">{event.totalBooked} tickets</p>
+                  <a href={`/events/${event.id}/summary`} className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition-colors">
                     View Summary →
                   </a>
                 </div>
               </div>
 
               {event.shows.length > 0 && (
-                <div className="border-t border-gray-100 pt-4">
+                <div className="border-t border-white/[0.06] pt-4">
                   <table className="w-full text-sm">
-                    <thead className="text-left text-gray-500">
+                    <thead className="text-left text-white/40 text-xs uppercase">
                       <tr>
                         <th className="pb-2">Date</th>
                         <th className="pb-2">Venue</th>
@@ -108,11 +108,11 @@ export default function OrganiserDashboard() {
                     </thead>
                     <tbody>
                       {event.shows.map((show) => (
-                        <tr key={show.id} className="border-t border-gray-50">
-                          <td className="py-2">{new Date(show.date).toLocaleDateString()} {show.time}</td>
-                          <td className="py-2">{show.venue}</td>
-                          <td className="py-2 text-right">{show.bookedSeats}</td>
-                          <td className="py-2 text-right font-medium">₹{show.revenue.toLocaleString()}</td>
+                        <tr key={show.id} className="border-t border-white/[0.06]">
+                          <td className="py-2 text-white/60">{new Date(show.date).toLocaleDateString()} {show.time}</td>
+                          <td className="py-2 text-white/60">{show.venue}</td>
+                          <td className="py-2 text-right text-white/60">{show.bookedSeats}</td>
+                          <td className="py-2 text-right font-medium text-white">₹{show.revenue.toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>

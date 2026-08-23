@@ -43,15 +43,15 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-md border border-gray-100">
+      <div className="w-full max-w-md space-y-8 glass-card p-8">
         <div>
-          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-gray-900">
+          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-white">
             Create an account
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-          <div className="space-y-4 rounded-md shadow-sm">
+          {error && <div className="text-red-400 text-sm text-center">{error}</div>}
+          <div className="space-y-4">
             <Input
               label="Full Name"
               type="text"
@@ -74,15 +74,15 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <label className="block text-sm font-medium text-white/60 mb-1">Role</label>
               <select
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
+                className="glass-input block w-full"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
-                <option value="CUSTOMER">Customer</option>
-                <option value="ORGANISER">Event Organiser</option>
-                <option value="ADMIN">System Admin</option>
+                <option value="CUSTOMER" className="bg-slate-900 text-white">Customer</option>
+                <option value="ORGANISER" className="bg-slate-900 text-white">Event Organiser</option>
+                <option value="ADMIN" className="bg-slate-900 text-white">System Admin</option>
               </select>
             </div>
           </div>
@@ -92,8 +92,8 @@ export default function RegisterPage() {
               Register
             </Button>
           </div>
-          <div className="text-sm text-center">
-            <a href="/login" className="font-medium text-primary hover:text-blue-500">
+          <div className="text-sm text-center text-white/40">
+            <a href="/login" className="font-medium text-blue-400 hover:text-blue-300">
               Already have an account? Sign in
             </a>
           </div>

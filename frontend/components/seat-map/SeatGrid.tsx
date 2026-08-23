@@ -108,9 +108,9 @@ export function SeatGrid({ showId, initialSeats, shape = 'RECTANGULAR', onSelect
   const renderRows = (rowsToRender: typeof rows, isTopHalf: boolean = false) => {
     const displayRows = isTopHalf ? [...rowsToRender].reverse() : rowsToRender;
 
-    return displayRows.map(([rowNum, rowSeats]) => (
-      <div key={rowNum} className="flex items-center justify-center space-x-4 mb-2">
-        <div className="w-6 text-right text-sm font-bold text-gray-400">
+    return displayRows.map(([rowNum, rowSeats], rowIndex) => (
+      <div key={rowNum} className="flex items-center justify-center space-x-4 mb-2 animate-row-reveal" style={{ animationDelay: `${rowIndex * 60}ms` }}>
+        <div className="w-6 text-right text-sm font-bold text-white/25">
           {String.fromCharCode(64 + Number(rowNum))}
         </div>
         <div className={`flex space-x-2 ${isTopHalf ? 'rotate-180' : ''}`}>
@@ -132,7 +132,7 @@ export function SeatGrid({ showId, initialSeats, shape = 'RECTANGULAR', onSelect
             );
           })}
         </div>
-        <div className="w-6 text-left text-sm font-bold text-gray-400">
+        <div className="w-6 text-left text-sm font-bold text-white/25">
           {String.fromCharCode(64 + Number(rowNum))}
         </div>
       </div>
@@ -145,16 +145,17 @@ export function SeatGrid({ showId, initialSeats, shape = 'RECTANGULAR', onSelect
 
         {shape === 'RECTANGULAR' && (
           <>
-            <div className="w-3/4 mx-auto h-8 bg-gray-200 rounded-b-[50%] border-t-4 border-gray-400 text-center text-xs font-semibold text-gray-500 pt-1 mb-12 shadow-inner">
+            <div className="w-3/4 mx-auto text-center text-[8px] text-white/25 uppercase tracking-[2px] mb-1 p-1 border border-white/[0.05] rounded">
               SCREEN
             </div>
+            <div className="h-[2px] w-3/4 mx-auto mb-8 animate-shimmer bg-white/[0.2] shadow-[0_0_15px_rgba(255,255,255,0.3)]"></div>
             {renderRows(rows)}
           </>
         )}
 
         {shape === 'STAGE' && (
           <>
-            <div className="w-3/4 mx-auto h-16 bg-gray-900 rounded-b-full border-t-8 border-black text-center flex items-center justify-center text-white font-bold tracking-widest mb-16 shadow-2xl shadow-gray-900/50">
+            <div className="w-3/4 mx-auto h-16 bg-white/[0.08] rounded-b-full border-t-4 border-white/10 text-center flex items-center justify-center text-white/60 font-bold tracking-widest mb-16 shadow-2xl">
               STAGE
             </div>
             {renderRows(rows)}
@@ -164,7 +165,7 @@ export function SeatGrid({ showId, initialSeats, shape = 'RECTANGULAR', onSelect
         {shape === 'CIRCULAR' && (
           <>
             {renderRows(rows.slice(0, Math.ceil(rows.length / 2)), true)}
-            <div className="w-full max-w-2xl mx-auto h-40 bg-green-50 border-4 border-green-200 rounded-[100px] my-10 flex items-center justify-center text-green-700 font-bold uppercase tracking-[0.3em] shadow-inner">
+            <div className="w-full max-w-2xl mx-auto h-40 bg-green-500/[0.05] border-2 border-green-500/20 rounded-[100px] my-10 flex items-center justify-center text-green-400/60 font-bold uppercase tracking-[0.3em] shadow-inner">
               Pitch / Court
             </div>
             {renderRows(rows.slice(Math.ceil(rows.length / 2)), false)}

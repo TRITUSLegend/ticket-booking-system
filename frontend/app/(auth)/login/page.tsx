@@ -47,15 +47,15 @@ function LoginContent() {
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-md border border-gray-100">
+      <div className="w-full max-w-md space-y-8 glass-card p-8">
         <div>
-          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-gray-900">
+          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-white">
             Sign in to your account
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-          <div className="space-y-4 rounded-md shadow-sm">
+          {error && <div className="text-red-400 text-sm text-center">{error}</div>}
+          <div className="space-y-4">
             <Input
               label="Email address"
               type="email"
@@ -77,8 +77,8 @@ function LoginContent() {
               Sign in
             </Button>
           </div>
-          <div className="text-sm text-center">
-            <a href="/register" className="font-medium text-primary hover:text-blue-500">
+          <div className="text-sm text-center text-white/40">
+            <a href="/register" className="font-medium text-blue-400 hover:text-blue-300">
               Don&apos;t have an account? Register
             </a>
           </div>
@@ -88,4 +88,4 @@ function LoginContent() {
   );
 }
 
-export default function LoginPage() { return <React.Suspense fallback={<div>Loading...</div>}><LoginContent /></React.Suspense>; }
+export default function LoginPage() { return <React.Suspense fallback={<div className="p-8 text-center text-white/60">Loading...</div>}><LoginContent /></React.Suspense>; }

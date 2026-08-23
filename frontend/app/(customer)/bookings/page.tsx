@@ -63,11 +63,11 @@ export default function BookingsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-8">My Bookings</h1>
+      <h1 className="text-3xl font-bold mb-8 text-white">My Bookings</h1>
 
       {bookings.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <p className="text-gray-500 mb-4">You haven&apos;t made any bookings yet.</p>
+        <div className="glass-card p-12 text-center">
+          <p className="text-white/40 mb-4">You haven&apos;t made any bookings yet.</p>
           <Button onClick={() => window.location.href = '/events'}>Browse Events</Button>
         </div>
       ) : (
@@ -79,23 +79,23 @@ export default function BookingsPage() {
             const seatLabels = booking.bookingSeats.map(bs => bs.showSeat.seat.label).join(', ');
 
             return (
-              <div key={booking.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div key={booking.id} className="glass-card p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h2 className="text-lg font-bold">{booking.show.event.title}</h2>
+                      <h2 className="text-lg font-bold text-white">{booking.show.event.title}</h2>
                       <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                        isCancelled ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                        isCancelled ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
                       }`}>
                         {booking.status}
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-white/55 text-sm">
                       {showDate.toLocaleDateString()} at {booking.show.time} • {booking.show.venue.name}
                     </p>
-                    <p className="text-gray-500 text-sm mt-1">Seats: {seatLabels}</p>
-                    <p className="text-gray-500 text-sm">Total: ₹{booking.totalAmount}</p>
-                    <p className="text-gray-400 text-xs mt-1">Ref: {booking.qrReference}</p>
+                    <p className="text-white/40 text-sm mt-1">Seats: {seatLabels}</p>
+                    <p className="text-white/40 text-sm">Total: <span className="text-green-400">₹{booking.totalAmount}</span></p>
+                    <p className="text-white/30 text-xs font-mono mt-1">Ref: {booking.qrReference}</p>
                   </div>
 
                   {!isCancelled && !isPast && (

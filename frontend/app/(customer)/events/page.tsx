@@ -29,14 +29,14 @@ export default function EventsPage() {
       <h1 className="text-3xl font-bold mb-8">Upcoming Events</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event) => (
-          <div key={event.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col">
+          <div key={event.id} className="glass-card p-6 flex flex-col">
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-xl font-bold">{event.title}</h2>
-              <span className="px-2 py-1 bg-gray-100 text-xs font-semibold rounded text-gray-600">
+              <span className="px-2 py-1 bg-white/10 text-xs font-semibold rounded text-white/60">
                 {event.type.replace('_', ' ')}
               </span>
             </div>
-            <p className="text-gray-600 text-sm mb-6 flex-grow">{event.description}</p>
+            <p className="text-white/55 text-sm mb-6 flex-grow">{event.description}</p>
             <Button
               variant="primary"
               className="w-full"
@@ -47,7 +47,7 @@ export default function EventsPage() {
           </div>
         ))}
         {events.length === 0 && (
-          <div className="col-span-full text-center py-12 text-gray-500">
+          <div className="col-span-full text-center py-12 text-white/40">
             No events found.
           </div>
         )}

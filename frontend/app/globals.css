@@ -2,8 +2,128 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Dark Glassmorphism Design System ─── */
+
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-[#0F172A] text-white antialiased;
+  }
+}
+
+/* ─── Keyframe Animations ─── */
+
+@keyframes pulse-held {
+  0%, 100% { box-shadow: 0 0 4px rgba(245, 158, 11, 0.3); }
+  50% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.6); }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes float-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes count-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes row-reveal {
+  0% { opacity: 0; transform: translateY(6px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* ─── Utility Classes ─── */
+
+@layer components {
+  .glass-card {
+    @apply bg-white/[0.05] backdrop-blur-xl border border-white/[0.08] rounded-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-colors duration-300 hover:bg-white/[0.08];
+  }
+
+  .glass-input {
+    @apply bg-white/[0.05] border border-white/10 text-white placeholder:text-white/30
+           focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30
+           rounded-lg px-3 py-2 text-sm outline-none transition-all;
+  }
+
+  .glass-select {
+    @apply glass-input appearance-none cursor-pointer;
+  }
+}
+
+/* ─── Animation Utilities ─── */
+
+@layer utilities {
+  .animate-float-in {
+    animation: float-in 0.6s ease both;
+  }
+
+  .animate-row-reveal {
+    animation: row-reveal 0.4s ease both;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+
+  .animate-pulse-held {
+    animation: pulse-held 2s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .animate-slide-in {
+    animation: slide-in 0.3s ease both;
+  }
+
+  .animate-count-pulse {
+    animation: count-pulse 0.25s ease;
+  }
+
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .animate-glow-breathe {
+    animation: glow-breathe 4s ease-in-out infinite;
   }
 }

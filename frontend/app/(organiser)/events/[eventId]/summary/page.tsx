@@ -100,9 +100,9 @@ export default function EventSummaryPage() {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center">Loading event summary...</div>;
-  if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
-  if (!event) return <div className="p-8 text-center text-red-600">Event not found.</div>;
+  if (isLoading) return <div className="p-8 text-center text-white/60">Loading event summary...</div>;
+  if (error) return <div className="p-8 text-center text-red-400">{error}</div>;
+  if (!event) return <div className="p-8 text-center text-red-400">Event not found.</div>;
 
   const handleAddShow = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,32 +138,32 @@ export default function EventSummaryPage() {
     <div className="max-w-6xl mx-auto p-4 md:p-8">
       <div className="flex flex-col md:flex-row md:items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">{event.title}</h1>
-          <p className="text-gray-600 mt-1">{event.description}</p>
-          <span className="inline-block mt-2 px-3 py-1 bg-gray-100 text-sm font-semibold rounded-full text-gray-600">
+          <h1 className="text-3xl font-bold text-white">{event.title}</h1>
+          <p className="text-white/55 mt-1">{event.description}</p>
+          <span className="inline-block mt-2 px-3 py-1 bg-white/10 text-xs font-semibold rounded-full text-white/60">
             {event.type}
           </span>
         </div>
         <div className="flex gap-4 mt-4 md:mt-0">
           <button
             onClick={() => setIsAddShowModalOpen(true)}
-            className="px-4 py-2 bg-primary text-white rounded font-medium hover:bg-blue-700 transition"
+            className="px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#6366F1] text-white rounded-lg font-medium hover:shadow-[0_4px_15px_rgba(59,130,246,0.4)] transition hover:-translate-y-0.5"
           >
             Schedule Additional Show
           </button>
           <button
             onClick={handleDeleteEvent}
-            className="px-4 py-2 bg-red-600 text-white rounded font-medium hover:bg-red-700 transition"
+            className="px-4 py-2 bg-red-500 hover:bg-red-600 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)] text-white rounded-lg font-medium transition"
           >
             Delete Event
           </button>
         </div>
       </div>
 
-      <h2 className="text-xl font-bold mb-4">Shows</h2>
+      <h2 className="text-xl font-bold text-white mb-4">Shows</h2>
 
       {event.shows.length === 0 ? (
-        <p className="text-gray-500">No shows scheduled for this event.</p>
+        <p className="text-white/40">No shows scheduled for this event.</p>
       ) : (
         <div className="space-y-8">
           {event.shows.map((show: any) => {
@@ -173,24 +173,24 @@ export default function EventSummaryPage() {
             );
 
             return (
-              <div key={show.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div key={show.id} className="glass-card p-6">
                 {/* Show Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-4 border-b border-white/[0.06]">
                   <div>
-                    <h3 className="font-bold text-lg">
+                    <h3 className="font-bold text-lg text-white">
                       {new Date(show.date).toLocaleDateString()} at {show.time}
                     </h3>
-                    <p className="text-gray-600 text-sm">{show.venue.name} — {show.venue.address}</p>
+                    <p className="text-white/55 text-sm">{show.venue.name} — {show.venue.address}</p>
                   </div>
                   <div className="flex flex-col sm:items-end gap-2 mt-2 sm:mt-0">
                     <div className="text-right">
-                      <p className="text-sm text-gray-500">Total Seats: {show._count.seats}</p>
-                      <p className="text-sm text-gray-500">Bookings: {show.bookings.length}</p>
-                      <p className="text-lg font-bold text-green-600">₹{totalRevenue.toLocaleString()}</p>
+                      <p className="text-sm text-white/50">Total Seats: {show._count.seats}</p>
+                      <p className="text-sm text-white/50">Bookings: {show.bookings.length}</p>
+                      <p className="text-lg font-bold text-green-400">₹{totalRevenue.toLocaleString()}</p>
                     </div>
                     <button
                       onClick={() => handleDeleteShow(show.id)}
-                      className="text-sm text-red-600 hover:text-red-800 transition underline"
+                      className="text-sm text-red-400 hover:text-red-300 transition underline"
                     >
                       Delete Show
                     </button>
@@ -199,10 +199,10 @@ export default function EventSummaryPage() {
 
                 {/* Pricing */}
                 <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-gray-500 mb-2">Pricing</h4>
-                  <div className="flex gap-4">
+                  <h4 className="text-xs font-semibold uppercase text-white/40 mb-2">Pricing</h4>
+                  <div className="flex flex-wrap gap-3">
                     {show.pricing.map((p: any) => (
-                      <span key={p.id} className="bg-gray-50 border border-gray-200 rounded px-3 py-1 text-sm">
+                      <span key={p.id} className="bg-white/[0.05] border border-white/10 rounded px-3 py-1 text-sm text-white/70">
                         {p.category}: ₹{Number(p.price)}
                       </span>
                     ))}
@@ -213,7 +213,7 @@ export default function EventSummaryPage() {
                 {show.bookings.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="text-left text-gray-500 border-b border-gray-100">
+                      <thead className="text-left text-white/40 text-xs uppercase border-b border-white/[0.06]">
                         <tr>
                           <th className="pb-2 pr-4">Customer</th>
                           <th className="pb-2 pr-4">Email</th>
@@ -228,11 +228,11 @@ export default function EventSummaryPage() {
                             .join(', ');
 
                           return (
-                            <tr key={booking.id} className="border-b border-gray-50">
-                              <td className="py-2 pr-4">{booking.customer.name}</td>
-                              <td className="py-2 pr-4 text-gray-500">{booking.customer.email}</td>
-                              <td className="py-2 pr-4">{seatLabels}</td>
-                              <td className="py-2 text-right font-medium">₹{Number(booking.totalAmount)}</td>
+                            <tr key={booking.id} className="border-b border-white/[0.06]">
+                              <td className="py-2 pr-4 text-white">{booking.customer.name}</td>
+                              <td className="py-2 pr-4 text-white/55">{booking.customer.email}</td>
+                              <td className="py-2 pr-4 text-white/70">{seatLabels}</td>
+                              <td className="py-2 text-right font-medium text-white">₹{Number(booking.totalAmount)}</td>
                             </tr>
                           );
                         })}
@@ -240,7 +240,7 @@ export default function EventSummaryPage() {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-sm">No bookings for this show yet.</p>
+                  <p className="text-white/40 text-sm">No bookings for this show yet.</p>
                 )}
               </div>
             );
@@ -254,29 +254,47 @@ export default function EventSummaryPage() {
         title="Schedule Additional Show"
       >
         <form onSubmit={handleAddShow} className="space-y-4">
-          {showError && <div className="text-red-500 text-sm mb-4">{showError}</div>}
+          {showError && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg p-3 mb-4">
+              {showError}
+            </div>
+          )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Venue</label>
+            <label className="block text-sm font-medium text-white/60 mb-1">Venue</label>
             <select
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm px-3 py-2 border"
+              className="block w-full rounded-lg bg-white/[0.05] border border-white/10 text-white shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 sm:text-sm px-3 py-2 outline-none [&>option]:bg-slate-900 [&>option]:text-white"
               value={venueId}
               onChange={(e) => setVenueId(e.target.value)}
               required
             >
-              <option value="" disabled>
+              <option value="" disabled className="bg-slate-900 text-white/40">
                 {venues.length === 0 ? 'No compatible venues available' : 'Select a venue...'}
               </option>
               {venues.map((v) => (
-                <option key={v.id} value={v.id}>{v.name}</option>
+                <option key={v.id} value={v.id} className="bg-slate-900 text-white">{v.name}</option>
               ))}
             </select>
           </div>
-          <Input label="Show Date" type="date" value={showDate} onChange={(e) => setShowDate(e.target.value)} required />
-          <Input label="Show Time" type="time" value={showTime} onChange={(e) => setShowTime(e.target.value)} required />
+          <Input
+            label="Show Date"
+            type="date"
+            value={showDate}
+            onChange={(e) => setShowDate(e.target.value)}
+            required
+            className="bg-white/[0.05] border-white/10 text-white placeholder:text-white/30 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 rounded-lg"
+          />
+          <Input
+            label="Show Time"
+            type="time"
+            value={showTime}
+            onChange={(e) => setShowTime(e.target.value)}
+            required
+            className="bg-white/[0.05] border-white/10 text-white placeholder:text-white/30 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 rounded-lg"
+          />
 
           {venueCategories.length > 0 && (
-            <div className="pt-2 border-t border-gray-100">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Set Pricing per Category</h4>
+            <div className="pt-2 border-t border-white/[0.06]">
+              <h4 className="text-sm font-medium text-white/60 mb-2">Set Pricing per Category</h4>
               <div className="grid grid-cols-2 gap-4">
                 {venueCategories.map(cat => (
                   <Input
@@ -287,13 +305,14 @@ export default function EventSummaryPage() {
                     value={pricingInputs[cat] || ''}
                     onChange={(e) => setPricingInputs({ ...pricingInputs, [cat]: e.target.value })}
                     required
+                    className="bg-white/[0.05] border-white/10 text-white placeholder:text-white/30 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 rounded-lg"
                   />
                 ))}
               </div>
             </div>
           )}
 
-          <Button type="submit" className="w-full" isLoading={isSubmittingShow}>Schedule Show</Button>
+          <Button type="submit" className="w-full mt-2" isLoading={isSubmittingShow}>Schedule Show</Button>
         </form>
       </Modal>
     </div>

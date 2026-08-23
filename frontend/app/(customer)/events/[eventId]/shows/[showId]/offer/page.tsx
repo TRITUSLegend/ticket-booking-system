@@ -71,8 +71,8 @@ function OfferContent() {
   if (status === 'loading') {
     return (
       <div className="max-w-lg mx-auto p-8 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
-        <p className="text-gray-600">Processing your offer...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4" />
+        <p className="text-white/55">Processing your offer...</p>
       </div>
     );
   }
@@ -80,14 +80,14 @@ function OfferContent() {
   if (status === 'error') {
     return (
       <div className="max-w-lg mx-auto p-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="glass-card p-8 text-center">
+          <div className="w-16 h-16 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Offer Unavailable</h1>
-          <p className="text-gray-600 mb-6">{errorMessage}</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Offer Unavailable</h1>
+          <p className="text-white/55 mb-6">{errorMessage}</p>
           <Button onClick={() => router.push('/events')}>Browse Events</Button>
         </div>
       </div>
@@ -97,14 +97,14 @@ function OfferContent() {
   if (status === 'success') {
     return (
       <div className="max-w-lg mx-auto p-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="glass-card p-8 text-center">
+          <div className="w-16 h-16 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Offer Claimed!</h1>
-          <p className="text-gray-600">Redirecting you to checkout...</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Offer Claimed!</h1>
+          <p className="text-white/55">Redirecting you to checkout...</p>
         </div>
       </div>
     );
@@ -113,21 +113,21 @@ function OfferContent() {
   // status === 'ready'
   return (
     <div className="max-w-lg mx-auto p-8">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="glass-card p-8 text-center">
+        <div className="w-16 h-16 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">You Have a Waitlist Offer!</h1>
-        <p className="text-gray-600 mb-8">
+        <h1 className="text-2xl font-bold text-white mb-2">You Have a Waitlist Offer!</h1>
+        <p className="text-white/55 mb-8">
           A seat has become available for you. Click below to claim it and proceed to checkout.
           This offer is time-limited — act fast!
         </p>
 
         {!user ? (
           <>
-            <p className="text-sm text-amber-600 mb-4">You need to be logged in to claim this offer.</p>
+            <p className="text-sm text-yellow-400 mb-4">You need to be logged in to claim this offer.</p>
             <Button onClick={() => router.push(`/login?redirect=/events/x/shows/${showId}/offer?token=${token}`)}>
               Log In to Claim
             </Button>

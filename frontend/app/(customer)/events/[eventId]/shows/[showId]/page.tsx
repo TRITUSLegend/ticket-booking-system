@@ -116,7 +116,7 @@ export default function ShowSeatMapPage() {
       <div className="flex flex-col md:flex-row gap-8">
 
         {/* Left Column: Seat Map */}
-        <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-x-auto">
+        <div className="flex-1 bg-transparent p-4 overflow-x-auto">
           <div className="flex justify-center min-w-max">
             <SeatGrid
               showId={showId}
@@ -129,19 +129,19 @@ export default function ShowSeatMapPage() {
 
         {/* Right Column: Details & Checkout */}
         <div className="w-full md:w-80 flex flex-col gap-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="glass-card p-6">
             <h3 className="font-bold text-lg mb-2">{showData.event.title}</h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-white/55 mb-4">
               {new Date(showData.date).toLocaleDateString()} at {showData.time}
             </p>
-            <p className="text-sm text-gray-500 mb-6">{showData.venue.name}</p>
+            <p className="text-sm text-white/40 mb-6">{showData.venue.name}</p>
 
-            <div className="border-t border-gray-100 pt-4 mb-6">
-              <h4 className="text-sm font-semibold mb-3">Pricing</h4>
+            <div className="border-t border-white/[0.06] pt-4 mb-6">
+              <h4 className="text-sm font-semibold text-white/60 mb-3">Pricing</h4>
               {showData.pricing.map((p: any) => (
-                <div key={p.id} className="flex justify-between text-sm mb-1">
-                  <span>{p.category}</span>
-                  <span className="font-medium">₹{Number(p.price)}</span>
+                <div key={p.id} className="flex justify-between mb-1">
+                  <span className="text-sm text-white/60">{p.category}</span>
+                  <span className="text-sm font-medium text-white">₹{Number(p.price)}</span>
                 </div>
               ))}
             </div>
@@ -149,22 +149,22 @@ export default function ShowSeatMapPage() {
             <SeatLegend />
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
+          <div className="glass-card p-6 sticky top-4">
             <h3 className="font-bold mb-4">Your Selection</h3>
 
             {selectedSeatsList.length === 0 ? (
-              <p className="text-gray-500 text-sm">No seats selected</p>
+              <p className="text-white/40 text-sm">No seats selected</p>
             ) : (
               <>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {selectedSeatsList.map(seat => (
-                    <span key={seat.id} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                    <span key={seat.id} className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded">
                       {seat.label} ({seat.category})
                     </span>
                   ))}
                 </div>
 
-                <div className="flex justify-between font-bold text-lg mb-6 border-t pt-4">
+                <div className="flex justify-between font-bold text-lg mb-6 border-t border-white/[0.06] pt-4">
                   <span>Total</span>
                   <span>₹{totalPrice}</span>
                 </div>
@@ -176,14 +176,14 @@ export default function ShowSeatMapPage() {
                 >
                   Book Tickets
                 </Button>
-                <p className="text-xs text-gray-500 text-center">
+                <p className="text-xs text-white/40 text-center">
                   Seats will be held for 10 minutes to complete checkout.
                 </p>
               </>
             )}
 
-            <div className="mt-6 pt-4 border-t border-gray-100">
-              <p className="text-sm text-gray-600 mb-3 text-center">Show full? Join the waitlist.</p>
+            <div className="mt-6 pt-4 border-t border-white/[0.06]">
+              <p className="text-sm text-white/40 mb-3 text-center">Show full? Join the waitlist.</p>
               <Button
                 variant="secondary"
                 className="w-full"
@@ -202,14 +202,14 @@ export default function ShowSeatMapPage() {
         title="Join Waitlist"
       >
         <div className="space-y-4">
-          <p className="text-gray-600 text-sm">
+          <p className="text-white/55 text-sm">
             If tickets become available due to cancellations, waitlisted customers are automatically offered the tickets in order.
           </p>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Seat Category</label>
+            <label className="block text-sm font-medium text-white/60 mb-1">Seat Category</label>
             <select
-              className="w-full rounded-md border border-gray-300 p-2"
+              className="glass-select w-full p-2"
               value={waitlistCategory}
               onChange={(e) => setWaitlistCategory(e.target.value)}
             >
