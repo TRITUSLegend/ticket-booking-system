@@ -67,6 +67,6 @@ The signed offer link uses HMAC-SHA256 with the `HMAC_SECRET` environment variab
 | Render (backend) | Sleeps after 15min idle | Lazy expiry on all seat/offer checks |
 | Upstash Redis | 10K commands/day free | Minimal Redis usage (BullMQ jobs only) |
 | Neon (PostgreSQL) | Computes suspend after 5min idle | Connection pooling via Prisma, cold start acceptable |
-| Resend (email) | 100 emails/day | Email failures never roll back bookings; logged for retry |
+| Brevo (email) | 300 emails/day | Email failures never roll back bookings; logged for retry |
 
 Correctness is preserved despite all these constraints because the system never relies on background jobs for state consistency — they are purely an optimization.

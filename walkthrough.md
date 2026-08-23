@@ -14,7 +14,7 @@ The Ticket Booking System has been fully implemented, meeting all architectural,
 
 ### 🎨 Frontend
 
-- **Next.js 14 App Router:** Built without third-party component libraries. All primitives (Modals, Toasts, Badges, Spinners) built with raw React + Tailwind.
+- **Next.js 14 App Router:** Built without third-party component libraries. All primitives (Modals, Toasts, Buttons, Inputs) built with raw React + Tailwind.
 - **Real-Time Seat Map:** Smart `SeatGrid` component listens for `seat:status-changed` events via Socket.io and updates instantly in the UI. 
 - **Waitlist UX:** Clean modal for joining the waitlist directly from the seat map page when the category is full.
 - **Compilation Verified:** Passed Next.js optimized production build (`npm run build` code 0). Suspense boundaries correctly implemented for client-side search params tracking.

@@ -14,7 +14,7 @@ A production-quality ticket booking system for movies and concerts with real-tim
 | Real-time | Socket.io |
 | Auth | JWT (access + refresh tokens), bcrypt |
 | QR Codes | `qrcode` npm package |
-| Email | Nodemailer + Gmail SMTP |
+| Email | Brevo transactional email HTTP API |
 
 ## Setup Instructions
 
@@ -22,7 +22,7 @@ A production-quality ticket booking system for movies and concerts with real-tim
 - Node.js 18+
 - A [Neon](https://neon.tech) PostgreSQL database (free tier)
 - An [Upstash](https://upstash.com) Redis database (free tier)
-- A standard Gmail account (for sending emails via SMTP)
+- A [Brevo](https://brevo.com) account with an API key and a verified sender address (free tier)
 
 ### 1. Clone & Install
 
@@ -47,7 +47,8 @@ cp .env.example .env
 - `DATABASE_URL` — Neon PostgreSQL connection string
 - `REDIS_URL` — Upstash Redis connection string
 - `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` — 32+ char secrets
-- `SMTP_USER` & `SMTP_PASS` — Your Gmail address and Google App Password
+- `SMTP_USER` — Verified sender address shown on outgoing mail
+- `BREVO_API_KEY` — Brevo API key; without it the app runs but skips email sends
 - `HMAC_SECRET` — 32+ char secret for QR/waitlist signing
 
 **Frontend `.env`**:
@@ -61,12 +62,13 @@ npx prisma migrate dev --schema=src/prisma/schema.prisma
 npm run db:seed
 ```
 
-After the initial migration, add the partial unique index by creating a new migration:
+After the initial migration, apply the partial unique index. Prisma cannot express
+partial unique indexes natively, so it ships as raw SQL in
+[`backend/src/prisma/migrations/partial_unique_index.sql`](backend/src/prisma/migrations/partial_unique_index.sql):
 
 ```sql
--- Add to a new migration file
-CREATE UNIQUE INDEX "ShowSeat_active_idx" 
-ON "show_seats" ("showId", "seatId") 
+CREATE UNIQUE INDEX IF NOT EXISTS "ShowSeat_active_idx"
+ON "show_seats" ("showId", "seatId")
 WHERE status IN ('HELD', 'BOOKED');
 ```
 
@@ -114,6 +116,7 @@ Default seed users (password: `password123`):
 | POST | `/api/venues` | Admin | Create venue with layout `{ name, address, layout: {rows, columns}, categoryAssignments }` |
 | GET | `/api/venues` | Bearer | List all venues |
 | GET | `/api/venues/:id` | Bearer | Get venue details with seats |
+| PUT | `/api/venues/:id/categories` | Admin | Update seat category assignments for a venue |
 
 ### Events
 | Method | Endpoint | Auth | Description |
@@ -121,6 +124,7 @@ Default seed users (password: `password123`):
 | POST | `/api/events` | Organiser | Create event `{ title, description, type }` |
 | GET | `/api/events` | Public | List events (query: `?type=MOVIE&search=rock`) |
 | GET | `/api/events/:id` | Public | Get event with shows |
+| DELETE | `/api/events/:id` | Organiser | Delete an event the organiser owns |
 
 ### Shows
 | Method | Endpoint | Auth | Description |
@@ -128,6 +132,7 @@ Default seed users (password: `password123`):
 | POST | `/api/shows` | Organiser | Create show `{ eventId, venueId, date, time, pricing }` |
 | GET | `/api/shows/:id` | Public | Get show details |
 | GET | `/api/shows/event/:eventId` | Public | List shows for an event |
+| DELETE | `/api/shows/:id` | Organiser | Delete a show the organiser owns |
 
 ### Seats
 | Method | Endpoint | Auth | Description |
@@ -206,14 +211,31 @@ Key files:
 
 ---
 
-## Concurrency Test
+## Tests
+
+All three scripts talk to a real database — point `DATABASE_URL` at a scratch
+database, not production. Each one cleans up the rows it creates.
 
 ```bash
 cd backend
-npm run test:concurrency
+
+npm run test:concurrency   # 20 simultaneous holds on one seat
+npm run test:core          # double-book prevention, waitlist join, offer cascade
+npm run test:smoke         # end-to-end register → hold → checkout
 ```
 
-Fires 20 simultaneous hold requests for the same seat, asserts exactly 1 succeeds with 19 clean rejections.
+- **`test:concurrency`** ([`tests/concurrency.test.ts`](backend/tests/concurrency.test.ts)) fires 20 simultaneous
+  hold requests for the same seat and asserts exactly 1 succeeds with 19 clean rejections.
+- **`test:core`** ([`tests/core-mechanics.test.ts`](backend/tests/core-mechanics.test.ts)) covers the three
+  domain mechanisms end to end: concurrent double-hold rejection, joining a waitlist
+  on a sold-out category, and the offer cascade after a hold expires.
+- **`test:smoke`** ([`scripts/smoke-test.js`](backend/scripts/smoke-test.js)) runs against a live instance.
+  Defaults to `http://localhost:4000`; override with an argument or `API_URL`:
+
+  ```bash
+  npm run test:smoke -- https://your-backend.onrender.com
+  API_URL=https://your-backend.onrender.com npm run test:smoke
+  ```
 
 ---
 

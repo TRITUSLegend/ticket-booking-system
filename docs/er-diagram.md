@@ -17,6 +17,7 @@ erDiagram
         string name
         string address
         uuid createdBy FK
+        enum_array supportedEventTypes
         datetime createdAt
     }
 
@@ -25,6 +26,7 @@ erDiagram
         uuid venueId FK
         int rows
         int columns
+        enum shape
         datetime createdAt
     }
 
@@ -33,7 +35,7 @@ erDiagram
         uuid layoutId FK
         int row
         int column
-        enum category
+        string category
         string label
     }
 
@@ -59,7 +61,7 @@ erDiagram
     ShowSeatPricing {
         uuid id PK
         uuid showId FK
-        enum category
+        string category
         decimal price
     }
 
@@ -92,7 +94,7 @@ erDiagram
     Waitlist {
         uuid id PK
         uuid showId FK
-        enum category
+        string category
         uuid customerId FK
         enum status
         datetime offerExpiresAt
