@@ -59,15 +59,16 @@ export default function BookingsPage() {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center">Loading bookings...</div>;
+  if (isLoading) return <div className="p-8 text-center text-[var(--text-secondary)]">Loading bookings...</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-8 text-white">My Bookings</h1>
+      <p className="micro-label mb-2">Your tickets</p>
+      <h1 className="text-3xl font-bold tracking-[-0.5px] mb-8 text-[var(--text-primary)]">My Bookings</h1>
 
       {bookings.length === 0 ? (
-        <div className="glass-card p-12 text-center">
-          <p className="text-white/40 mb-4">You haven&apos;t made any bookings yet.</p>
+        <div className="glass-card glass-card-static p-12 text-center">
+          <p className="text-[var(--text-muted)] mb-4">You haven&apos;t made any bookings yet.</p>
           <Button onClick={() => window.location.href = '/events'}>Browse Events</Button>
         </div>
       ) : (
@@ -79,23 +80,35 @@ export default function BookingsPage() {
             const seatLabels = booking.bookingSeats.map(bs => bs.showSeat.seat.label).join(', ');
 
             return (
-              <div key={booking.id} className="glass-card p-6">
+              <div
+                key={booking.id}
+                className={`glass-card p-6 border-l-2 transition-opacity ${
+                  isCancelled
+                    ? 'border-l-white/10 opacity-50'
+                    : 'border-l-[var(--accent-primary)]'
+                }`}
+                style={isCancelled ? undefined : { boxShadow: 'inset 2px 0 12px -6px var(--glow-blue)' }}
+              >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h2 className="text-lg font-bold text-white">{booking.show.event.title}</h2>
-                      <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                        isCancelled ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
+                      <h2 className="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{booking.show.event.title}</h2>
+                      <span className={`px-2.5 py-0.5 text-[10px] uppercase tracking-widest rounded-full ${
+                        isCancelled
+                          ? 'bg-[var(--color-booked)]/15 text-red-300'
+                          : 'bg-[var(--color-success)]/15 text-emerald-300'
                       }`}>
                         {booking.status}
                       </span>
                     </div>
-                    <p className="text-white/55 text-sm">
+                    <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
                       {showDate.toLocaleDateString()} at {booking.show.time} • {booking.show.venue.name}
                     </p>
-                    <p className="text-white/40 text-sm mt-1">Seats: {seatLabels}</p>
-                    <p className="text-white/40 text-sm">Total: <span className="text-green-400">₹{booking.totalAmount}</span></p>
-                    <p className="text-white/30 text-xs font-mono mt-1">Ref: {booking.qrReference}</p>
+                    <p className="text-sm text-[var(--text-muted)] mt-1">Seats: {seatLabels}</p>
+                    <p className="text-sm text-[var(--text-muted)]">
+                      Total: <span className="font-semibold text-[var(--color-success)]">₹{booking.totalAmount}</span>
+                    </p>
+                    <p className="text-xs font-mono mt-1 text-[var(--text-muted)]">Ref: {booking.qrReference}</p>
                   </div>
 
                   {!isCancelled && !isPast && (

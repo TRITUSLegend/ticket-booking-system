@@ -27,42 +27,96 @@ export default function EventDetailPage() {
     loadEvent();
   }, [eventId]);
 
-  if (isLoading) return <div className="p-8 text-center">Loading event details...</div>;
-  if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
+  if (isLoading) {
+    return <div className="p-8 text-center text-[var(--text-secondary)]">Loading event details...</div>;
+  }
+  if (error) return <div className="p-8 text-center text-red-400">{error}</div>;
+
+  const showCount = event.shows.length;
+  const nextShow = showCount > 0 ? event.shows[0] : null;
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8">
-      <div className="glass-card p-8 mb-8">
-        <div className="flex items-center space-x-4 mb-4">
-          <h1 className="text-3xl font-bold">{event.title}</h1>
-          <span className="px-3 py-1 bg-white/10 text-sm font-semibold rounded-full text-white/60">
-            {event.type}
-          </span>
-        </div>
-        <p className="text-white/60 mb-4">{event.description}</p>
-        <p className="text-sm text-white/40">Organized by {event.organiser.name}</p>
-      </div>
+    <div>
+      {/* Hero — drifting gradient with ambient glow orbs behind a frosted info bar */}
+      <section className="hero-gradient">
+        <div
+          className="hero-orb"
+          style={{ width: 120, height: 120, top: '-30px', right: '10%', background: 'rgba(59, 130, 246, 0.2)' }}
+        />
+        <div
+          className="hero-orb"
+          style={{ width: 80, height: 80, bottom: '-20px', left: '12%', background: 'rgba(139, 92, 246, 0.15)', animationDelay: '2s' }}
+        />
 
-      <h2 className="text-2xl font-bold mb-6">Available Shows</h2>
-      <div className="space-y-4">
-        {event.shows.map((show: any) => (
-          <div key={show.id} className="glass-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="relative max-w-4xl mx-auto px-4 md:px-8 py-14 md:py-20">
+          <p className="micro-label mb-3">{event.type.replace('_', ' ')}</p>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-[-0.5px] text-[var(--text-primary)]">
+            {event.title}
+          </h1>
+          <p className="mt-4 text-sm leading-relaxed text-[var(--text-secondary)] max-w-2xl">
+            {event.description}
+          </p>
+
+          {/* Frosted info bar, floats in on load */}
+          <div className="glass-card glass-card-static info-float mt-8 p-5 grid grid-cols-2 sm:grid-cols-3 gap-5">
             <div>
-              <h3 className="font-bold text-lg">{new Date(show.date).toLocaleDateString()} at {show.time}</h3>
-              <p className="text-white/55">{show.venue.name}, {show.venue.address}</p>
+              <p className="micro-label mb-1">Organiser</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">{event.organiser.name}</p>
             </div>
-            {(!user || user.role === 'CUSTOMER') && (
-              <Button
-                onClick={() => window.location.href = `/events/${event.id}/shows/${show.id}`}
-              >
-                Select Seats
-              </Button>
+            <div>
+              <p className="micro-label mb-1">Shows</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
+                {showCount} scheduled
+              </p>
+            </div>
+            {nextShow && (
+              <div>
+                <p className="micro-label mb-1">Next Show</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">
+                  {new Date(nextShow.date).toLocaleDateString()} · {nextShow.time}
+                </p>
+              </div>
             )}
           </div>
-        ))}
-        {event.shows.length === 0 && (
-          <p className="text-white/40">No shows scheduled for this event yet.</p>
-        )}
+        </div>
+      </section>
+
+      <div className="max-w-4xl mx-auto p-4 md:p-8">
+        <h2 className="text-2xl font-semibold tracking-tight mb-6">Available Shows</h2>
+
+        <div className="space-y-4">
+          {event.shows.map((show: any, index: number) => (
+            <div
+              key={show.id}
+              className={`glass-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                index === 0 ? 'border-[var(--accent-primary)]/40 shadow-glow-blue' : ''
+              }`}
+            >
+              <div>
+                {index === 0 && <p className="micro-label mb-1">Next Up</p>}
+                <h3 className="font-semibold text-lg tracking-tight text-[var(--text-primary)]">
+                  {new Date(show.date).toLocaleDateString()} at {show.time}
+                </h3>
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                  {show.venue.name}, {show.venue.address}
+                </p>
+              </div>
+              {(!user || user.role === 'CUSTOMER') && (
+                <Button
+                  onClick={() => window.location.href = `/events/${event.id}/shows/${show.id}`}
+                >
+                  Select Seats
+                </Button>
+              )}
+            </div>
+          ))}
+
+          {event.shows.length === 0 && (
+            <div className="glass-card glass-card-static p-12 text-center text-[var(--text-muted)]">
+              No shows scheduled for this event yet.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

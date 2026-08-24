@@ -75,7 +75,7 @@ export default function EditVenueCategoriesPage() {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center text-white/60">Loading venue...</div>;
+  if (isLoading) return <div className="p-8 text-center text-[var(--text-secondary)]">Loading venue...</div>;
   if (!venue) return <div className="p-8 text-center text-red-400">Venue not found</div>;
 
   const layout = venue.layouts[0];
@@ -87,16 +87,16 @@ export default function EditVenueCategoriesPage() {
         <button onClick={() => router.back()} className="text-white/40 hover:text-white/80 transition-colors">
           &larr; Back
         </button>
-        <h1 className="text-3xl font-bold text-white">Edit Seat Categories</h1>
+        <h1 className="text-3xl font-bold tracking-[-0.5px] text-[var(--text-primary)]">Edit Seat Categories</h1>
       </div>
 
-      <div className="glass-card p-6">
+      <div className="glass-card glass-card-static p-6">
         <div className="mb-6 pb-6 border-b border-white/[0.06]">
-          <h2 className="text-xl font-semibold text-white">{venue.name}</h2>
-          <p className="text-white/40 text-sm mt-1">
+          <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)]">{venue.name}</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Shape: {layout.shape} | Rows: {layout.rows} | Columns: {layout.columns}
           </p>
-          <p className="text-xs text-yellow-400 mt-2 bg-yellow-500/10 border border-yellow-500/20 p-2 rounded-lg">
+          <p className="text-xs text-amber-300 mt-2 bg-[var(--color-held)]/10 border border-[var(--color-held)]/20 p-2 rounded-lg">
             Note: You are overwriting all existing seat categories for this venue. This action is only allowed if no shows have been scheduled here yet.
           </p>
         </div>
@@ -106,12 +106,12 @@ export default function EditVenueCategoriesPage() {
 
           <div>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold text-white">Category Assignments</h3>
+              <h3 className="font-semibold tracking-tight text-[var(--text-primary)]">Category Assignments</h3>
               <button type="button" className="text-blue-400 hover:text-blue-300 text-sm hover:underline font-medium" onClick={addAssignment}>+ Add Row Range</button>
             </div>
 
             {layout.shape === 'CIRCULAR' && (
-              <p className="text-xs text-blue-400 mb-4 bg-blue-500/10 border border-blue-500/20 p-2 rounded-lg">
+              <p className="text-xs text-blue-300 mb-4 bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 p-2 rounded-lg">
                 For circular layouts, assignments are mirrored symmetrically from the pitch outwards (1 to {maxRow}).
               </p>
             )}

@@ -100,9 +100,10 @@ export default function CreateEventPage() {
   if (eventCreated) {
     return (
       <div className="max-w-2xl mx-auto p-4 md:p-8">
-        <div className="glass-card p-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Event Created!</h1>
-          <p className="text-white/55 mb-6">Now schedule a show for this event.</p>
+        <div className="glass-card glass-card-static p-8 animate-float-in">
+          <p className="micro-label mb-2">Step 2 of 2</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)] mb-2">Event Created!</h1>
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)] mb-6">Now schedule a show for this event.</p>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg p-3 mb-4">
@@ -173,8 +174,9 @@ export default function CreateEventPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 md:p-8">
-      <div className="glass-card p-8">
-        <h1 className="text-2xl font-bold text-white mb-6">Create New Event</h1>
+      <div className="glass-card glass-card-static p-8">
+        <p className="micro-label mb-2">Step 1 of 2</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)] mb-6">Create New Event</h1>
 
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg p-3 mb-4">

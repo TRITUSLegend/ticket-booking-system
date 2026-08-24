@@ -11,6 +11,13 @@ import { useToast } from '../../../../../../components/ui/Toast';
 import { Modal } from '../../../../../../components/ui/Modal';
 import { SeatData } from '../../../../../../types';
 
+/**
+ * Mirrors the backend SEAT_HOLD_TTL_SECONDS default. Used only to scale the
+ * hold-countdown bar and the copy beneath the checkout button, so the two
+ * cannot drift apart.
+ */
+const HOLD_TTL_SECONDS = 600;
+
 export default function ShowSeatMapPage() {
   const { showId } = useParams() as { showId: string };
   const router = useRouter();
@@ -26,6 +33,8 @@ export default function ShowSeatMapPage() {
 
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const [waitlistCategory, setWaitlistCategory] = useState('STANDARD');
+
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
 
   // Load initial data
   useEffect(() => {
@@ -49,6 +58,42 @@ export default function ShowSeatMapPage() {
     };
     if (showId) load();
   }, [showId, showToast]);
+
+  // Seats this user is already holding, and when the earliest hold lapses.
+  const activeHold = useMemo(() => {
+    if (!user) return null;
+    const mine = initialSeats.filter(
+      (s) => s.status === 'HELD' && s.heldById === user.id && s.holdExpiresAt
+    );
+    if (mine.length === 0) return null;
+
+    const expiresAt = Math.min(
+      ...mine.map((s) => new Date(s.holdExpiresAt as string).getTime())
+    );
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) return null;
+
+    return { seatIds: mine.map((s) => s.id), expiresAt };
+  }, [initialSeats, user]);
+
+  // Drive the hold countdown once per second while a hold is live.
+  useEffect(() => {
+    if (!activeHold) {
+      setSecondsLeft(null);
+      return;
+    }
+
+    const tick = () => {
+      const remaining = Math.max(0, Math.round((activeHold.expiresAt - Date.now()) / 1000));
+      setSecondsLeft(remaining);
+      return remaining;
+    };
+
+    if (tick() === 0) return;
+    const timer = setInterval(() => {
+      if (tick() === 0) clearInterval(timer);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [activeHold]);
 
   const handleHoldSeats = async () => {
     if (!user) {
@@ -80,6 +125,11 @@ export default function ShowSeatMapPage() {
     }
   };
 
+  const handleResumeHold = () => {
+    if (!activeHold) return;
+    router.push(`/checkout?showId=${showId}&seatIds=${activeHold.seatIds.join(',')}`);
+  };
+
   const handleJoinWaitlist = async () => {
     if (!user) {
       router.push(`/login?redirect=/events/${showData?.eventId}/shows/${showId}`);
@@ -101,8 +151,10 @@ export default function ShowSeatMapPage() {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center">Loading seat map...</div>;
-  if (!showData) return <div className="p-8 text-center text-red-600">Show not found</div>;
+  if (isLoading) {
+    return <div className="p-8 text-center text-[var(--text-secondary)]">Loading seat map...</div>;
+  }
+  if (!showData) return <div className="p-8 text-center text-red-400">Show not found</div>;
 
   // Calculate pricing info
   const selectedSeatsList = initialSeats.filter(s => selectedSeatIds.includes(s.id));
@@ -111,89 +163,163 @@ export default function ShowSeatMapPage() {
     return sum + Number(pricing?.price || 0);
   }, 0);
 
+  const holdIsLive = secondsLeft !== null && secondsLeft > 0;
+  const isBarVisible = selectedSeatIds.length > 0 || holdIsLive;
+  const timerPercent = holdIsLive
+    ? Math.max(0, Math.min(100, ((secondsLeft as number) / HOLD_TTL_SECONDS) * 100))
+    : 0;
+  const holdClock = holdIsLive
+    ? `${Math.floor((secondsLeft as number) / 60)}:${String((secondsLeft as number) % 60).padStart(2, '0')}`
+    : null;
+
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="bg-[var(--bg-primary)] min-h-full">
+      {/* pb leaves room for the sticky checkout bar */}
+      <div className="max-w-6xl mx-auto p-4 md:p-8 pb-32">
+        <div className="flex flex-col md:flex-row gap-8">
 
-        {/* Left Column: Seat Map */}
-        <div className="flex-1 bg-transparent p-4 overflow-x-auto">
-          <div className="flex justify-center min-w-max">
-            <SeatGrid
-              showId={showId}
-              initialSeats={initialSeats}
-              shape={showData.layout.shape}
-              onSelectionChange={setSelectedSeatIds}
-            />
+          {/* Left Column: Seat Map */}
+          <div className="flex-1 bg-transparent p-4 overflow-x-auto">
+            <div className="flex justify-center min-w-max">
+              <SeatGrid
+                showId={showId}
+                initialSeats={initialSeats}
+                shape={showData.layout.shape}
+                onSelectionChange={setSelectedSeatIds}
+                pricing={showData.pricing}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Right Column: Details & Checkout */}
-        <div className="w-full md:w-80 flex flex-col gap-6">
-          <div className="glass-card p-6">
-            <h3 className="font-bold text-lg mb-2">{showData.event.title}</h3>
-            <p className="text-white/55 mb-4">
-              {new Date(showData.date).toLocaleDateString()} at {showData.time}
-            </p>
-            <p className="text-sm text-white/40 mb-6">{showData.venue.name}</p>
+          {/* Right Column: Details & Checkout */}
+          <div className="w-full md:w-80 flex flex-col gap-6">
+            <div className="glass-card glass-card-static p-6">
+              <p className="micro-label mb-2">{showData.venue.name}</p>
+              <h3 className="font-semibold text-lg tracking-tight mb-1">{showData.event.title}</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-6">
+                {new Date(showData.date).toLocaleDateString()} at {showData.time}
+              </p>
 
-            <div className="border-t border-white/[0.06] pt-4 mb-6">
-              <h4 className="text-sm font-semibold text-white/60 mb-3">Pricing</h4>
-              {showData.pricing.map((p: any) => (
-                <div key={p.id} className="flex justify-between mb-1">
-                  <span className="text-sm text-white/60">{p.category}</span>
-                  <span className="text-sm font-medium text-white">₹{Number(p.price)}</span>
-                </div>
-              ))}
+              <div className="border-t border-white/[0.06] pt-4 mb-6">
+                <h4 className="micro-label mb-3">Pricing</h4>
+                {showData.pricing.map((p: any) => (
+                  <div key={p.id} className="flex justify-between mb-1">
+                    <span className="text-sm text-[var(--text-secondary)]">{p.category}</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">₹{Number(p.price)}</span>
+                  </div>
+                ))}
+              </div>
+
+              <SeatLegend />
             </div>
 
-            <SeatLegend />
+            <div className="glass-card glass-card-static p-6 sticky top-20">
+              <h3 className="micro-label mb-4">Your Selection</h3>
+
+              {selectedSeatsList.length === 0 ? (
+                <p className="text-[var(--text-muted)] text-sm">No seats selected</p>
+              ) : (
+                <>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {selectedSeatsList.map(seat => (
+                      <span key={seat.id} className="bg-[var(--accent-primary)]/20 text-blue-300 text-xs px-2 py-1 rounded-full">
+                        {seat.label} ({seat.category})
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between items-baseline text-lg mb-6 border-t border-white/[0.06] pt-4">
+                    <span className="text-sm text-[var(--text-secondary)]">Total</span>
+                    <span
+                      key={totalPrice}
+                      className="font-semibold text-[var(--text-primary)] animate-price-pulse"
+                    >
+                      ₹{totalPrice}
+                    </span>
+                  </div>
+
+                  <Button
+                    className="w-full mb-2"
+                    onClick={handleHoldSeats}
+                    isLoading={isHolding}
+                  >
+                    Book Tickets
+                  </Button>
+                  <p className="text-xs text-[var(--text-muted)] text-center">
+                    Seats will be held for {Math.round(HOLD_TTL_SECONDS / 60)} minutes to complete checkout.
+                  </p>
+                </>
+              )}
+
+              <div className="mt-6 pt-4 border-t border-white/[0.06]">
+                <p className="text-sm text-[var(--text-muted)] mb-3 text-center">Show full? Join the waitlist.</p>
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => setIsWaitlistModalOpen(true)}
+                >
+                  Join Waitlist
+                </Button>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="glass-card p-6 sticky top-4">
-            <h3 className="font-bold mb-4">Your Selection</h3>
-
-            {selectedSeatsList.length === 0 ? (
-              <p className="text-white/40 text-sm">No seats selected</p>
+      {/* Sticky checkout bar — slides up once a seat is selected or a hold is live */}
+      <div
+        className={`checkout-bar fixed bottom-0 left-0 right-0 z-30 border-t border-white/[0.08] ${
+          isBarVisible ? 'visible' : ''
+        }`}
+      >
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+          <div>
+            {holdIsLive && selectedSeatIds.length === 0 ? (
+              <>
+                <p className="micro-label mb-0.5">Hold expires in {holdClock}</p>
+                <p className="text-lg font-semibold text-[var(--text-primary)]">
+                  {activeHold?.seatIds.length} seat{activeHold?.seatIds.length === 1 ? '' : 's'} held
+                </p>
+              </>
             ) : (
               <>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedSeatsList.map(seat => (
-                    <span key={seat.id} className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded">
-                      {seat.label} ({seat.category})
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex justify-between font-bold text-lg mb-6 border-t border-white/[0.06] pt-4">
-                  <span>Total</span>
-                  <span>₹{totalPrice}</span>
-                </div>
-
-                <Button
-                  className="w-full mb-2"
-                  onClick={handleHoldSeats}
-                  isLoading={isHolding}
+                <p className="micro-label mb-0.5">
+                  {selectedSeatIds.length} seat{selectedSeatIds.length === 1 ? '' : 's'} selected
+                  {holdClock ? ` · hold expires in ${holdClock}` : ''}
+                </p>
+                <p
+                  key={totalPrice}
+                  className="text-lg font-semibold text-[var(--text-primary)] animate-price-pulse"
                 >
-                  Book Tickets
-                </Button>
-                <p className="text-xs text-white/40 text-center">
-                  Seats will be held for 10 minutes to complete checkout.
+                  ₹{totalPrice}
                 </p>
               </>
             )}
-
-            <div className="mt-6 pt-4 border-t border-white/[0.06]">
-              <p className="text-sm text-white/40 mb-3 text-center">Show full? Join the waitlist.</p>
-              <Button
-                variant="secondary"
-                className="w-full"
-                onClick={() => setIsWaitlistModalOpen(true)}
-              >
-                Join Waitlist
-              </Button>
-            </div>
           </div>
+
+          {holdIsLive && selectedSeatIds.length === 0 ? (
+            <Button onClick={handleResumeHold}>Resume checkout</Button>
+          ) : (
+            <Button onClick={handleHoldSeats} isLoading={isHolding}>
+              Proceed to checkout
+            </Button>
+          )}
         </div>
+
+        {/* Hold TTL depletion bar */}
+        {holdIsLive && (
+          <div className="w-full bg-white/[0.06]">
+            <div
+              className="timer-bar"
+              style={{ width: `${timerPercent}%` }}
+              role="progressbar"
+              aria-label="Time remaining on your seat hold"
+              aria-valuenow={secondsLeft ?? 0}
+              aria-valuemin={0}
+              aria-valuemax={HOLD_TTL_SECONDS}
+            />
+          </div>
+        )}
       </div>
 
       <Modal
@@ -202,14 +328,14 @@ export default function ShowSeatMapPage() {
         title="Join Waitlist"
       >
         <div className="space-y-4">
-          <p className="text-white/55 text-sm">
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
             If tickets become available due to cancellations, waitlisted customers are automatically offered the tickets in order.
           </p>
 
           <div>
-            <label className="block text-sm font-medium text-white/60 mb-1">Seat Category</label>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Seat Category</label>
             <select
-              className="glass-select w-full p-2"
+              className="glass-select w-full [&>option]:bg-slate-900 [&>option]:text-white"
               value={waitlistCategory}
               onChange={(e) => setWaitlistCategory(e.target.value)}
             >

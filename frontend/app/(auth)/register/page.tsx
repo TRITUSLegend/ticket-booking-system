@@ -43,14 +43,19 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 glass-card p-8">
+      <div className="w-full max-w-md space-y-8 glass-card glass-card-static p-8 animate-float-in">
         <div>
-          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-white">
+          <p className="micro-label text-center mb-2">Get started</p>
+          <h2 className="text-center text-3xl font-bold tracking-[-0.5px] text-[var(--text-primary)]">
             Create an account
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="text-red-400 text-sm text-center">{error}</div>}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm text-center rounded-lg p-3">
+              {error}
+            </div>
+          )}
           <div className="space-y-4">
             <Input
               label="Full Name"
@@ -74,7 +79,7 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Role</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Role</label>
               <select
                 className="glass-input block w-full"
                 value={role}
@@ -92,8 +97,8 @@ export default function RegisterPage() {
               Register
             </Button>
           </div>
-          <div className="text-sm text-center text-white/40">
-            <a href="/login" className="font-medium text-blue-400 hover:text-blue-300">
+          <div className="text-sm text-center text-[var(--text-muted)]">
+            <a href="/login" className="font-medium text-blue-400 hover:text-blue-300 transition-colors">
               Already have an account? Sign in
             </a>
           </div>

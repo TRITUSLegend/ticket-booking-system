@@ -100,7 +100,7 @@ export default function EventSummaryPage() {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center text-white/60">Loading event summary...</div>;
+  if (isLoading) return <div className="p-8 text-center text-[var(--text-secondary)]">Loading event summary...</div>;
   if (error) return <div className="p-8 text-center text-red-400">{error}</div>;
   if (!event) return <div className="p-8 text-center text-red-400">Event not found.</div>;
 
@@ -138,29 +138,29 @@ export default function EventSummaryPage() {
     <div className="max-w-6xl mx-auto p-4 md:p-8">
       <div className="flex flex-col md:flex-row md:items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">{event.title}</h1>
-          <p className="text-white/55 mt-1">{event.description}</p>
-          <span className="inline-block mt-2 px-3 py-1 bg-white/10 text-xs font-semibold rounded-full text-white/60">
+          <h1 className="text-3xl font-bold tracking-[-0.5px] text-[var(--text-primary)]">{event.title}</h1>
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)] mt-1">{event.description}</p>
+          <span className="inline-block mt-3 px-3 py-1 bg-white/10 text-[10px] uppercase tracking-widest rounded-full text-white/70">
             {event.type}
           </span>
         </div>
         <div className="flex gap-4 mt-4 md:mt-0">
           <button
             onClick={() => setIsAddShowModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#6366F1] text-white rounded-lg font-medium hover:shadow-[0_4px_15px_rgba(59,130,246,0.4)] transition hover:-translate-y-0.5"
+            className="btn-primary px-4 py-2 text-white rounded-lg text-sm font-medium"
           >
             Schedule Additional Show
           </button>
           <button
             onClick={handleDeleteEvent}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 hover:shadow-[0_0_15px_rgba(239,68,68,0.3)] text-white rounded-lg font-medium transition"
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500/15 text-red-300 border border-red-500/25 hover:bg-red-500/25 hover:shadow-glow-red transition-all duration-150"
           >
             Delete Event
           </button>
         </div>
       </div>
 
-      <h2 className="text-xl font-bold text-white mb-4">Shows</h2>
+      <h2 className="text-xl font-semibold tracking-tight text-[var(--text-primary)] mb-4">Shows</h2>
 
       {event.shows.length === 0 ? (
         <p className="text-white/40">No shows scheduled for this event.</p>
@@ -173,20 +173,20 @@ export default function EventSummaryPage() {
             );
 
             return (
-              <div key={show.id} className="glass-card p-6">
+              <div key={show.id} className="glass-card glass-card-static p-6">
                 {/* Show Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-4 border-b border-white/[0.06]">
                   <div>
-                    <h3 className="font-bold text-lg text-white">
+                    <h3 className="font-semibold text-lg tracking-tight text-[var(--text-primary)]">
                       {new Date(show.date).toLocaleDateString()} at {show.time}
                     </h3>
-                    <p className="text-white/55 text-sm">{show.venue.name} — {show.venue.address}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">{show.venue.name} — {show.venue.address}</p>
                   </div>
                   <div className="flex flex-col sm:items-end gap-2 mt-2 sm:mt-0">
                     <div className="text-right">
-                      <p className="text-sm text-white/50">Total Seats: {show._count.seats}</p>
-                      <p className="text-sm text-white/50">Bookings: {show.bookings.length}</p>
-                      <p className="text-lg font-bold text-green-400">₹{totalRevenue.toLocaleString()}</p>
+                      <p className="text-sm text-[var(--text-muted)]">Total Seats: {show._count.seats}</p>
+                      <p className="text-sm text-[var(--text-muted)]">Bookings: {show.bookings.length}</p>
+                      <p className="text-lg font-semibold tracking-tight text-[var(--color-success)]">₹{totalRevenue.toLocaleString()}</p>
                     </div>
                     <button
                       onClick={() => handleDeleteShow(show.id)}
@@ -199,10 +199,10 @@ export default function EventSummaryPage() {
 
                 {/* Pricing */}
                 <div className="mb-4">
-                  <h4 className="text-xs font-semibold uppercase text-white/40 mb-2">Pricing</h4>
+                  <h4 className="micro-label mb-2">Pricing</h4>
                   <div className="flex flex-wrap gap-3">
                     {show.pricing.map((p: any) => (
-                      <span key={p.id} className="bg-white/[0.05] border border-white/10 rounded px-3 py-1 text-sm text-white/70">
+                      <span key={p.id} className="bg-white/[0.05] border border-white/10 rounded-full px-3 py-1 text-sm text-white/70">
                         {p.category}: ₹{Number(p.price)}
                       </span>
                     ))}
@@ -213,7 +213,7 @@ export default function EventSummaryPage() {
                 {show.bookings.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="text-left text-white/40 text-xs uppercase border-b border-white/[0.06]">
+                      <thead className="text-left micro-label border-b border-white/[0.06]">
                         <tr>
                           <th className="pb-2 pr-4">Customer</th>
                           <th className="pb-2 pr-4">Email</th>
@@ -222,17 +222,20 @@ export default function EventSummaryPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {show.bookings.map((booking: any) => {
+                        {show.bookings.map((booking: any, rowIndex: number) => {
                           const seatLabels = booking.bookingSeats
                             .map((bs: any) => `${bs.showSeat.seat.label} (${bs.showSeat.seat.category})`)
                             .join(', ');
 
                           return (
-                            <tr key={booking.id} className="border-b border-white/[0.06]">
-                              <td className="py-2 pr-4 text-white">{booking.customer.name}</td>
-                              <td className="py-2 pr-4 text-white/55">{booking.customer.email}</td>
-                              <td className="py-2 pr-4 text-white/70">{seatLabels}</td>
-                              <td className="py-2 text-right font-medium text-white">₹{Number(booking.totalAmount)}</td>
+                            <tr
+                              key={booking.id}
+                              className={`border-b border-white/[0.06] ${rowIndex % 2 === 1 ? 'bg-white/[0.02]' : 'bg-transparent'}`}
+                            >
+                              <td className="py-2 px-2 text-[var(--text-primary)]">{booking.customer.name}</td>
+                              <td className="py-2 px-2 text-[var(--text-secondary)]">{booking.customer.email}</td>
+                              <td className="py-2 px-2 text-white/70">{seatLabels}</td>
+                              <td className="py-2 px-2 text-right font-semibold text-[var(--text-primary)]">₹{Number(booking.totalAmount)}</td>
                             </tr>
                           );
                         })}

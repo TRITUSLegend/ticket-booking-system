@@ -1,0 +1,45 @@
+/* ─────────────────────────────────────────────────────────────
+   Glassmorphism design tokens
+   Single source of truth for colour, glass, glow and text values.
+   Mirrored as Tailwind theme extensions in tailwind.config.js.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* Base */
+  --bg-deep: #0B1120;
+  --bg-primary: #0F172A;
+  --bg-surface: #1E293B;
+  --bg-elevated: #334155;
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg-hover: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 16px;
+
+  /* Accent */
+  --accent-primary: #3B82F6;
+  --accent-secondary: #6366F1;
+  --accent-purple: #8B5CF6;
+
+  /* Semantic seat states */
+  --color-available: rgba(255, 255, 255, 0.06);
+  --color-selected: #3B82F6;
+  --color-held: #F59E0B;
+  --color-booked: #EF4444;
+  --color-offered: #8B5CF6;
+  --color-success: #10B981;
+
+  /* Text */
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: rgba(255, 255, 255, 0.4);
+  --text-micro: rgba(255, 255, 255, 0.5);
+
+  /* Glow */
+  --glow-blue: rgba(59, 130, 246, 0.4);
+  --glow-amber: rgba(245, 158, 11, 0.3);
+  --glow-red: rgba(239, 68, 68, 0.3);
+  --glow-green: rgba(16, 185, 129, 0.3);
+  --glow-purple: rgba(139, 92, 246, 0.4);
+}

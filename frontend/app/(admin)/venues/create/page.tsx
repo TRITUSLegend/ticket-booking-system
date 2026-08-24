@@ -143,17 +143,22 @@ export default function CreateVenuePage() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-8 text-white">Create Venue</h1>
+      <p className="micro-label mb-2">Admin</p>
+      <h1 className="text-3xl font-bold tracking-[-0.5px] mb-8 text-[var(--text-primary)]">Create Venue</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="glass-card p-6">
+        <div className="glass-card glass-card-static p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <div className="text-red-400 text-sm">{error}</div>}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm rounded-lg p-3">
+                {error}
+              </div>
+            )}
             <Input label="Venue Name" value={name} onChange={(e) => setName(e.target.value)} required />
             <Input label="Address" value={address} onChange={(e) => setAddress(e.target.value)} required minLength={5} />
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-1">Layout Shape</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Layout Shape</label>
               <select
                 value={shape}
                 onChange={(e) => setShape(e.target.value)}
@@ -166,7 +171,7 @@ export default function CreateVenuePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Supported Events</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Supported Events</label>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {['CONCERT', 'MOVIE', 'SPORTS', 'THEATER', 'COMEDY', 'LIVE_EVENT'].map((type) => {
                   const isAllowedByShape = (SHAPE_EVENT_MAPPING[shape] || []).includes(type);
@@ -184,7 +189,7 @@ export default function CreateVenuePage() {
                   );
                 })}
               </div>
-              <p className="text-xs text-white/40 mt-1">Select which events this venue will host from the shape&apos;s supported list.</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Select which events this venue will host from the shape&apos;s supported list.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -194,12 +199,12 @@ export default function CreateVenuePage() {
 
             <div className="border-t border-white/[0.06] pt-4">
               <div className="flex justify-between items-center mb-1">
-                <h3 className="font-semibold text-sm text-white">Category Assignments</h3>
-                <button type="button" className="text-blue-400 text-sm hover:underline" onClick={addAssignment}>+ Add</button>
+                <h3 className="font-semibold text-sm text-[var(--text-primary)]">Category Assignments</h3>
+                <button type="button" className="text-blue-400 text-sm hover:text-blue-300 hover:underline transition-colors" onClick={addAssignment}>+ Add</button>
               </div>
 
               {shape === 'CIRCULAR' && (
-                <p className="text-xs text-blue-400 mb-3 bg-blue-500/10 border border-blue-500/20 p-2 rounded-lg">
+                <p className="text-xs text-blue-300 mb-3 bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 p-2 rounded-lg">
                   For circular layouts, assignments are mirrored symmetrically from the pitch outwards (1 to {Math.ceil(Number(rows) / 2) || 1}).
                 </p>
               )}
@@ -230,15 +235,15 @@ export default function CreateVenuePage() {
         </div>
 
         {/* Grid Preview */}
-        <div className="glass-card p-6 flex flex-col">
-          <h3 className="font-semibold text-sm text-white/60 mb-4">Layout Preview</h3>
+        <div className="glass-card glass-card-static p-6 flex flex-col">
+          <h3 className="micro-label mb-4">Layout Preview</h3>
           <div className="overflow-auto flex-1 bg-white/[0.03] rounded-xl border border-white/[0.06] p-4">
             {rowCount > 0 && colCount > 0 && rowCount <= 26 && colCount <= 50 ? (
               <div className="w-full min-w-max">
                 {shape === 'RECTANGULAR' && (
                   <>
-                    <div className="w-3/4 mx-auto h-8 bg-white/10 rounded-b-[50%] border-t-4 border-white/20 text-center text-xs font-semibold text-white/40 pt-1 mb-8 shadow-inner">
-                      SCREEN
+                    <div className="w-3/4 mx-auto h-8 bg-white/[0.08] rounded-b-[50%] border-t border-white/20 text-center micro-label pt-1.5 mb-8">
+                      Screen
                     </div>
                     {renderPreviewRows(0, Math.min(rowCount, 26))}
                   </>
@@ -246,8 +251,8 @@ export default function CreateVenuePage() {
 
                 {shape === 'STAGE' && (
                   <>
-                    <div className="w-3/4 mx-auto h-12 bg-white/[0.08] rounded-b-full border-t-8 border-white/10 text-center flex items-center justify-center text-white/60 text-sm font-bold tracking-widest mb-10 shadow-2xl">
-                      STAGE
+                    <div className="w-3/4 mx-auto h-12 bg-white/[0.08] rounded-b-full border-t border-white/10 text-center flex items-center justify-center micro-label mb-10">
+                      Stage
                     </div>
                     {renderPreviewRows(0, Math.min(rowCount, 26))}
                   </>
@@ -256,7 +261,7 @@ export default function CreateVenuePage() {
                 {shape === 'CIRCULAR' && (
                   <>
                     {renderPreviewRows(0, Math.ceil(Math.min(rowCount, 26) / 2), true)}
-                    <div className="w-full max-w-sm mx-auto h-24 bg-green-500/[0.05] border-4 border-green-500/20 rounded-[100px] my-6 flex items-center justify-center text-green-400/60 font-bold uppercase tracking-widest shadow-inner text-xs">
+                    <div className="w-full max-w-sm mx-auto h-24 bg-[var(--color-success)]/[0.05] border border-[var(--color-success)]/20 rounded-[100px] my-6 flex items-center justify-center micro-label text-emerald-300/60">
                       Pitch / Court
                     </div>
                     {renderPreviewRows(Math.ceil(Math.min(rowCount, 26) / 2), Math.min(rowCount, 26), false)}
