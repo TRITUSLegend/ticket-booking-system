@@ -30,9 +30,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const bgColors: Record<ToastType, string> = {
-    success: 'bg-green-500',
-    error: 'bg-red-500',
-    info: 'bg-blue-500',
+    success: 'border-[var(--color-success)]/30 text-emerald-200 shadow-glow-green',
+    error: 'border-[var(--color-booked)]/30 text-red-200 shadow-glow-red',
+    info: 'border-[var(--accent-primary)]/30 text-blue-200 shadow-glow-blue',
   };
 
   return (
@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`${bgColors[toast.type]} text-white px-4 py-3 rounded-lg shadow-lg text-sm animate-slide-in max-w-sm backdrop-blur-lg border border-white/10`}
+            className={`glass-panel ${bgColors[toast.type]} px-4 py-3 rounded-lg text-sm animate-slide-in max-w-sm`}
           >
             {toast.message}
           </div>
