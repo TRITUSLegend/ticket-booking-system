@@ -5,7 +5,11 @@ import { AuthProvider } from "../lib/auth-context";
 import { Navbar } from "../components/booking/Navbar";
 import { ToastProvider } from "../components/ui/Toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "TicketPro — Ticket Booking System",
@@ -18,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans bg-[var(--bg-deep)] text-[var(--text-primary)]">
         <ToastProvider>
           <AuthProvider>
             <div className="min-h-screen flex flex-col">

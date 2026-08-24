@@ -1,77 +1,126 @@
+@import './design-tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Dark Glassmorphism Design System ─── */
+/* ─────────────────────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────────────────────── */
 
 @layer base {
   body {
-    @apply bg-[#0F172A] text-white antialiased;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.025em;
   }
 }
 
-/* ─── Keyframe Animations ─── */
+/* ─────────────────────────────────────────────────────────────
+   Keyframes — every animation below moves only transform,
+   opacity, box-shadow, filter or background-position so the
+   compositor can run it off the main thread.
+   ───────────────────────────────────────────────────────────── */
 
-@keyframes pulse-held {
-  0%, 100% { box-shadow: 0 0 4px rgba(245, 158, 11, 0.3); }
-  50% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.6); }
-}
-
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.5; }
+/* 2. Selection ripple */
+@keyframes seat-ripple {
+  0%   { transform: scale(1); opacity: 0.5; }
   100% { transform: scale(2.2); opacity: 0; }
 }
 
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+/* 3. Held / offered ambient pulse */
+@keyframes held-pulse {
+  0%, 100% { box-shadow: 0 0 4px var(--glow-amber); }
+  50%      { box-shadow: 0 0 10px var(--glow-amber); }
 }
 
-@keyframes float-in {
-  0% { opacity: 0; transform: translateY(8px); }
-  100% { opacity: 1; transform: translateY(0); }
+@keyframes offered-pulse {
+  0%, 100% { box-shadow: 0 0 4px var(--glow-purple); }
+  50%      { box-shadow: 0 0 12px var(--glow-purple); }
 }
 
-@keyframes count-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+/* 4. Hero gradient drift (also drives .btn-primary) */
+@keyframes gradient-drift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
+/* 5. Ambient glow orbs */
+@keyframes orb-breathe {
+  0%, 100% { opacity: 0.15; }
+  50%      { opacity: 0.3; }
+}
+
+/* 7. Info bar float-in */
+@keyframes float-in {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 8. Screen shimmer */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 9. Staggered seat row reveal */
 @keyframes row-reveal {
-  0% { opacity: 0; transform: translateY(6px) scale(0.95); }
+  0%   { opacity: 0; transform: translateY(6px) scale(0.95); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes glow-breathe {
-  0%, 100% { opacity: 0.15; }
-  50% { opacity: 0.3; }
+/* 10. Price counter pulse */
+@keyframes price-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
 }
 
-@keyframes slide-up {
-  0% { transform: translateY(100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
+/* Toast entry (pre-existing, still used by ui/Toast) */
 @keyframes slide-in {
-  0% { transform: translateX(100%); opacity: 0; }
+  0%   { transform: translateX(100%); opacity: 0; }
   100% { transform: translateX(0); opacity: 1; }
 }
 
-/* ─── Utility Classes ─── */
+/* Waitlist offer urgency */
+@keyframes urgency-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+  50%      { box-shadow: 0 0 18px 0 var(--glow-purple); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Components
+   ───────────────────────────────────────────────────────────── */
 
 @layer components {
   .glass-card {
-    @apply bg-white/[0.05] backdrop-blur-xl border border-white/[0.08] rounded-xl;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    transition: background 0.3s ease;
   }
 
-  .glass-card-hover {
-    @apply glass-card transition-colors duration-300 hover:bg-white/[0.08];
+  .glass-card:hover {
+    background: var(--glass-bg-hover);
+  }
+
+  /* Opt out of the hover brighten for static panels */
+  .glass-card-static:hover {
+    background: var(--glass-bg);
+  }
+
+  .glass-panel {
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
   }
 
   .glass-input {
@@ -83,47 +132,227 @@
   .glass-select {
     @apply glass-input appearance-none cursor-pointer;
   }
-}
 
-/* ─── Animation Utilities ─── */
-
-@layer utilities {
-  .animate-float-in {
-    animation: float-in 0.6s ease both;
+  /* Micro-label: category / metadata / "SCREEN" / "PREMIUM" */
+  .micro-label {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-micro);
   }
 
-  .animate-row-reveal {
-    animation: row-reveal 0.4s ease both;
+  /* 11. Button hover lift */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background-size: 200% 200%;
+    animation: gradient-drift 3s ease infinite;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 
-  .animate-shimmer {
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px var(--glow-blue);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+  }
+
+  /* 4. Hero gradient drift */
+  .hero-gradient {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 40%, #312E81 100%);
+    background-size: 200% 200%;
+    animation: gradient-drift 8s ease infinite;
+  }
+
+  /* 5. Ambient glow orbs */
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    pointer-events: none;
+    animation: orb-breathe 4s ease-in-out infinite;
+  }
+
+  /* 6. Checkout bar slide-up */
+  .checkout-bar {
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 0.4s ease;
+  }
+
+  .checkout-bar.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 8. Screen shimmer */
+  .screen-shimmer {
+    height: 2px;
     background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
     background-size: 200% 100%;
     animation: shimmer 3s linear infinite;
   }
 
-  .animate-pulse-held {
-    animation: pulse-held 2s ease-in-out infinite;
+  /* 12. Seat tooltip */
+  .seat-tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    pointer-events: none;
+    z-index: 10;
   }
 
-  .animate-slide-up {
-    animation: slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  .seat:hover .seat-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  /* 13. Hold timer bar */
+  .timer-bar {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-purple));
+    border-radius: 1px;
+    transition: width 1s linear;
+  }
+
+  /* ── Seat states ───────────────────────────────────────────── */
+
+  .seat {
+    position: relative;
+  }
+
+  /* 1. Seat hover pop */
+  .seat-available {
+    background: var(--color-available);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+  }
+
+  .seat-available:hover {
+    transform: scale(1.25);
+    box-shadow: 0 0 8px var(--glow-blue);
+    z-index: 2;
+  }
+
+  .seat-selected {
+    background: var(--color-selected);
+    box-shadow: 0 0 8px var(--glow-blue);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.2s ease;
+  }
+
+  .seat-selected:hover {
+    transform: scale(1.15);
+    z-index: 2;
+  }
+
+  .seat-held {
+    background: var(--color-held);
+    cursor: not-allowed;
+    animation: held-pulse 2s ease-in-out infinite;
+  }
+
+  .seat-offered {
+    background: var(--color-offered);
+    cursor: not-allowed;
+    animation: offered-pulse 2s ease-in-out infinite;
+  }
+
+  .seat-booked {
+    background: var(--color-booked);
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .seat-ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1.5px solid var(--accent-primary);
+    pointer-events: none;
+    animation: seat-ripple 0.5s ease-out forwards;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Utilities
+   ───────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* 7. Info bar float-in */
+  .info-float {
+    animation: float-in 0.6s ease both;
+    animation-delay: 0.3s;
+  }
+
+  .animate-float-in {
+    animation: float-in 0.6s ease both;
+  }
+
+  /* 9. Row reveal — stagger driven by the --row-index custom property */
+  .row-reveal {
+    animation: row-reveal 0.4s ease both;
+    animation-delay: calc(var(--row-index, 0) * 60ms);
+  }
+
+  /* 10. Price counter pulse */
+  .animate-price-pulse {
+    animation: price-pulse 0.25s ease;
   }
 
   .animate-slide-in {
     animation: slide-in 0.3s ease both;
   }
 
-  .animate-count-pulse {
-    animation: count-pulse 0.25s ease;
+  .animate-urgency-pulse {
+    animation: urgency-pulse 2s ease-in-out infinite;
   }
 
-  .animate-gradient-shift {
+  .animate-gradient-drift {
     background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
+    animation: gradient-drift 8s ease infinite;
+  }
+}
+
+/* Respect the OS "reduce motion" setting: keep the colour system and
+   glass depth, drop the looping and entrance motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 
-  .animate-glow-breathe {
-    animation: glow-breathe 4s ease-in-out infinite;
+  .checkout-bar {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 }
