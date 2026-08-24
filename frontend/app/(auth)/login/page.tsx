@@ -47,14 +47,19 @@ function LoginContent() {
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 glass-card p-8">
+      <div className="w-full max-w-md space-y-8 glass-card glass-card-static p-8 animate-float-in">
         <div>
-          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-white">
+          <p className="micro-label text-center mb-2">Welcome back</p>
+          <h2 className="text-center text-3xl font-bold tracking-[-0.5px] text-[var(--text-primary)]">
             Sign in to your account
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="text-red-400 text-sm text-center">{error}</div>}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-300 text-sm text-center rounded-lg p-3">
+              {error}
+            </div>
+          )}
           <div className="space-y-4">
             <Input
               label="Email address"
@@ -77,8 +82,8 @@ function LoginContent() {
               Sign in
             </Button>
           </div>
-          <div className="text-sm text-center text-white/40">
-            <a href="/register" className="font-medium text-blue-400 hover:text-blue-300">
+          <div className="text-sm text-center text-[var(--text-muted)]">
+            <a href="/register" className="font-medium text-blue-400 hover:text-blue-300 transition-colors">
               Don&apos;t have an account? Register
             </a>
           </div>
@@ -88,4 +93,4 @@ function LoginContent() {
   );
 }
 
-export default function LoginPage() { return <React.Suspense fallback={<div className="p-8 text-center text-white/60">Loading...</div>}><LoginContent /></React.Suspense>; }
+export default function LoginPage() { return <React.Suspense fallback={<div className="p-8 text-center text-[var(--text-secondary)]">Loading...</div>}><LoginContent /></React.Suspense>; }
