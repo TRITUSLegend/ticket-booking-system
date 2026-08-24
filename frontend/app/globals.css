@@ -243,6 +243,12 @@
     position: relative;
   }
 
+  /* Lift whichever seat is hovered so its tooltip clears its neighbours,
+     including the locked states that do not scale. */
+  .seat:hover {
+    z-index: 3;
+  }
+
   /* 1. Seat hover pop */
   .seat-available {
     background: var(--color-available);
@@ -283,9 +289,10 @@
     animation: offered-pulse 2s ease-in-out infinite;
   }
 
+  /* The 0.7 knock-back lives in the colour rather than in `opacity`, so the
+     seat reads as dimmed without also fading its tooltip. */
   .seat-booked {
-    background: var(--color-booked);
-    opacity: 0.7;
+    background: rgba(239, 68, 68, 0.7);
     cursor: not-allowed;
   }
 
