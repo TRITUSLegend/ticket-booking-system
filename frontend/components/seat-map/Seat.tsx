@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 type SeatStatus = 'AVAILABLE' | 'HELD' | 'BOOKED' | 'OFFERED';
 
@@ -11,57 +11,109 @@ interface SeatProps {
   category: string;
   isMine: boolean;
   onSelect: (id: string) => void;
+  /** Optional — ticket price for this seat's category, shown in the tooltip. */
+  price?: number;
+  /** Optional — ISO timestamp the current hold/offer lapses at, shown in the tooltip. */
+  holdExpiresAt?: string | null;
 }
 
-export function Seat({ id, label, status, category, isMine, onSelect }: SeatProps) {
-  const [showRipple, setShowRipple] = useState(false);
+function formatRemaining(expiresAt: string, now: number): string | null {
+  const msLeft = new Date(expiresAt).getTime() - now;
+  if (!Number.isFinite(msLeft) || msLeft <= 0) return null;
+  const totalSeconds = Math.floor(msLeft / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
 
-  let bgColor = 'bg-white/[0.06]';
-  let cursor = 'cursor-pointer hover:bg-[rgba(59,130,246,0.25)] hover:scale-125 hover:shadow-[0_0_8px_rgba(59,130,246,0.3)] transition-all duration-200';
-  let title = `${label} (${category}) - Available`;
+export function Seat({
+  id,
+  label,
+  status,
+  category,
+  isMine,
+  onSelect,
+  price,
+  holdExpiresAt,
+}: SeatProps) {
+  const [ripples, setRipples] = useState<number[]>([]);
+  const [isHovered, setIsHovered] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+  const rippleSeq = useRef(0);
+
+  const isLocked = !isMine && (status === 'HELD' || status === 'OFFERED' || status === 'BOOKED');
+  const isInteractive = status === 'AVAILABLE' || isMine;
+
+  // Only the hovered seat ticks, so the countdown in the tooltip stays live
+  // without running an interval per seat across the whole grid.
+  useEffect(() => {
+    if (!isHovered || !holdExpiresAt) return;
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [isHovered, holdExpiresAt]);
+
+  const handleClick = useCallback(() => {
+    if (!isInteractive) return;
+    const rippleId = ++rippleSeq.current;
+    setRipples((prev) => [...prev, rippleId]);
+    onSelect(id);
+  }, [isInteractive, onSelect, id]);
+
+  const removeRipple = useCallback((rippleId: number) => {
+    setRipples((prev) => prev.filter((r) => r !== rippleId));
+  }, []);
+
+  let stateClass = 'seat-available';
+  let statusText = 'Available';
 
   if (isMine) {
-    bgColor = 'bg-[#3B82F6] shadow-[0_0_8px_rgba(59,130,246,0.5)] scale-105';
-    cursor = 'cursor-pointer';
-    title = `${label} (${category}) - Held by you`;
+    stateClass = 'seat-selected';
+    statusText = 'Selected';
   } else if (status === 'BOOKED') {
-    bgColor = 'bg-[#EF4444] opacity-70';
-    cursor = 'cursor-not-allowed';
-    title = `${label} - Booked`;
-  } else if (status === 'HELD' || status === 'OFFERED') {
-    bgColor = 'bg-[#F59E0B] animate-pulse-held';
-    cursor = 'cursor-not-allowed';
-    title = `${label} - Currently unavailable`;
+    stateClass = 'seat-booked';
+    statusText = 'Booked';
+  } else if (status === 'OFFERED') {
+    stateClass = 'seat-offered';
+    statusText = 'Offered';
+  } else if (status === 'HELD') {
+    stateClass = 'seat-held';
+    statusText = 'Held';
   }
 
-  const handleClick = () => {
-    if (status === 'AVAILABLE' || isMine) {
-      setShowRipple(true);
-      onSelect(id);
-    }
-  };
+  const remaining = holdExpiresAt && isLocked ? formatRemaining(holdExpiresAt, now) : null;
+  if (remaining) statusText = `${statusText} (${remaining} left)`;
 
-  useEffect(() => {
-    if (showRipple) {
-      const timer = setTimeout(() => setShowRipple(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [showRipple]);
+  const showPrice = typeof price === 'number' && !Number.isNaN(price) && !isLocked;
+  const tooltip = [label, category, statusText, showPrice ? `₹${price}` : null]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
     <div
+      role="button"
+      tabIndex={isInteractive ? 0 : -1}
+      aria-disabled={!isInteractive}
+      aria-label={tooltip}
       onClick={handleClick}
-      className={`group relative w-7 h-7 rounded-[4px] flex items-center justify-center transition-all ${bgColor} ${cursor}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`seat ${stateClass} w-7 h-7 rounded-seat flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]`}
     >
-      {showRipple && (
-        <span 
-          className="absolute inset-0 rounded-[4px] border-[1.5px] border-[#3B82F6]"
-          style={{ animation: 'pulse-ring 0.5s ease-out forwards' }} 
+      {ripples.map((rippleId) => (
+        <span
+          key={rippleId}
+          className="seat-ripple"
+          onAnimationEnd={() => removeRipple(rippleId)}
         />
-      )}
-      <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 bg-[rgba(15,23,42,0.95)] backdrop-blur-lg border border-white/10 text-white text-[9px] px-2 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-150 pointer-events-none z-10">
-        {title}
-      </span>
+      ))}
+      <span className="seat-tooltip">{tooltip}</span>
     </div>
   );
 }

@@ -1,24 +1,25 @@
 import React from 'react';
 
+const LEGEND_ITEMS: { label: string; className: string; glow?: string }[] = [
+  { label: 'Available', className: 'bg-[var(--color-available)] border border-white/10' },
+  { label: 'Selected', className: 'bg-[var(--color-selected)]', glow: '0 0 6px var(--glow-blue)' },
+  { label: 'Held', className: 'bg-[var(--color-held)]', glow: '0 0 6px var(--glow-amber)' },
+  { label: 'Offered', className: 'bg-[var(--color-offered)]', glow: '0 0 6px var(--glow-purple)' },
+  { label: 'Booked', className: 'bg-[var(--color-booked)] opacity-70' },
+];
+
 export function SeatLegend() {
   return (
-    <div className="flex flex-wrap gap-4 items-center justify-center text-sm">
-      <div className="flex items-center">
-        <div className="w-3 h-3 bg-white/[0.06] rounded-sm mr-2"></div>
-        <span className="text-white/35">Available</span>
-      </div>
-      <div className="flex items-center">
-        <div className="w-3 h-3 bg-[#3B82F6] rounded-sm mr-2"></div>
-        <span className="text-white/35">Selected</span>
-      </div>
-      <div className="flex items-center">
-        <div className="w-3 h-3 bg-[#F59E0B] rounded-sm mr-2"></div>
-        <span className="text-white/35">Held</span>
-      </div>
-      <div className="flex items-center">
-        <div className="w-3 h-3 bg-[#EF4444] opacity-70 rounded-sm mr-2"></div>
-        <span className="text-white/35">Booked</span>
-      </div>
+    <div className="flex flex-wrap gap-x-4 gap-y-2 items-center justify-center">
+      {LEGEND_ITEMS.map((item) => (
+        <div key={item.label} className="flex items-center gap-2">
+          <span
+            className={`w-2.5 h-2.5 rounded-full ${item.className}`}
+            style={item.glow ? { boxShadow: item.glow } : undefined}
+          />
+          <span className="text-xs text-[var(--text-muted)]">{item.label}</span>
+        </div>
+      ))}
     </div>
   );
 }
